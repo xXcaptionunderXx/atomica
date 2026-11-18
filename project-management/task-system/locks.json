@@ -1,6 +1,91 @@
 {
   "version": "1.0.0",
-  "locks": {},
+  "locks": {
+    "src/organelle": {
+      "agent": "claude",
+      "taskId": "TSK-UI-007",
+      "acquiredAt": "2026-11-18T22:57:34.025555+00:00",
+      "expiresAt": "2026-11-19T10:57:34.025567+00:00"
+    },
+    "src/ui/OrganelleView.ts": {
+      "agent": "claude",
+      "taskId": "TSK-UI-007",
+      "acquiredAt": "2026-11-18T22:57:34.025555+00:00",
+      "expiresAt": "2026-11-19T10:57:34.025567+00:00"
+    },
+    "src/ui/OrganellePanel.ts": {
+      "agent": "claude",
+      "taskId": "TSK-UI-007",
+      "acquiredAt": "2026-11-18T22:57:34.025555+00:00",
+      "expiresAt": "2026-11-19T10:57:34.025567+00:00"
+    },
+    "src/ui/LayerTabs.ts": {
+      "agent": "claude",
+      "taskId": "TSK-UI-007",
+      "acquiredAt": "2026-11-18T22:57:34.025555+00:00",
+      "expiresAt": "2026-11-19T10:57:34.025567+00:00"
+    },
+    "src/ui/clipboard.ts": {
+      "agent": "claude",
+      "taskId": "TSK-UI-007",
+      "acquiredAt": "2026-11-18T22:57:34.025555+00:00",
+      "expiresAt": "2026-11-19T10:57:34.025567+00:00"
+    },
+    "src/ui/LibraryPanel.ts": {
+      "agent": "claude",
+      "taskId": "TSK-UI-007",
+      "acquiredAt": "2026-11-18T22:57:34.025555+00:00",
+      "expiresAt": "2026-11-19T10:57:34.025567+00:00"
+    },
+    "src/ui/SandboxView.ts": {
+      "agent": "claude",
+      "taskId": "TSK-UI-007",
+      "acquiredAt": "2026-11-18T22:57:34.025555+00:00",
+      "expiresAt": "2026-11-19T10:57:34.025567+00:00"
+    },
+    "src/main.ts": {
+      "agent": "claude",
+      "taskId": "TSK-UI-007",
+      "acquiredAt": "2026-11-18T22:57:34.025555+00:00",
+      "expiresAt": "2026-11-19T10:57:34.025567+00:00"
+    },
+    "index.html": {
+      "agent": "claude",
+      "taskId": "TSK-UI-007",
+      "acquiredAt": "2026-11-18T22:57:34.025555+00:00",
+      "expiresAt": "2026-11-19T10:57:34.025567+00:00"
+    },
+    "src/styles.css": {
+      "agent": "claude",
+      "taskId": "TSK-UI-007",
+      "acquiredAt": "2026-11-18T22:57:34.025555+00:00",
+      "expiresAt": "2026-11-19T10:57:34.025567+00:00"
+    },
+    "scripts/build-organelle-catalog.mjs": {
+      "agent": "claude",
+      "taskId": "TSK-UI-007",
+      "acquiredAt": "2026-11-18T22:57:34.025555+00:00",
+      "expiresAt": "2026-11-19T10:57:34.025567+00:00"
+    },
+    "scripts/verify-organelle-structures.mjs": {
+      "agent": "claude",
+      "taskId": "TSK-UI-007",
+      "acquiredAt": "2026-11-18T22:57:34.025555+00:00",
+      "expiresAt": "2026-11-19T10:57:34.025567+00:00"
+    },
+    "src/chemistry/biomolecules": {
+      "agent": "claude",
+      "taskId": "TSK-UI-007",
+      "acquiredAt": "2026-11-18T22:57:34.025555+00:00",
+      "expiresAt": "2026-11-19T10:57:34.025567+00:00"
+    },
+    "tests/organelle": {
+      "agent": "claude",
+      "taskId": "TSK-UI-007",
+      "acquiredAt": "2026-11-18T22:57:34.025555+00:00",
+      "expiresAt": "2026-11-19T10:57:34.025567+00:00"
+    }
+  },
   "tasks": {
     "TSK-ENG-001": {
       "agent": "gemini",
@@ -108,6 +193,27 @@
       ],
       "claimedAt": "2026-11-18T22:38:23.044777+00:00",
       "releasedAt": "2026-11-18T22:45:45.980702+00:00"
+    },
+    "TSK-UI-007": {
+      "agent": "claude",
+      "status": "IN_PROGRESS",
+      "files": [
+        "src/organelle",
+        "src/ui/OrganelleView.ts",
+        "src/ui/OrganellePanel.ts",
+        "src/ui/LayerTabs.ts",
+        "src/ui/clipboard.ts",
+        "src/ui/LibraryPanel.ts",
+        "src/ui/SandboxView.ts",
+        "src/main.ts",
+        "index.html",
+        "src/styles.css",
+        "scripts/build-organelle-catalog.mjs",
+        "scripts/verify-organelle-structures.mjs",
+        "src/chemistry/biomolecules",
+        "tests/organelle"
+      ],
+      "claimedAt": "2026-11-18T22:57:34.025555+00:00"
     }
   }
 }
