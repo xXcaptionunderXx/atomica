@@ -186,3 +186,5 @@
 - **Selection:** Shift-drag box adds atoms to the selection, Ctrl/Shift-click toggles atoms, Ctrl+A selects all. A selection drags together; Delete / right-click removes all of it; Ctrl+C / X / V copy, cut and paste at the mouse (bonds, charges and library names kept; partial copies lose the exact name).
 - **Bond angles toggle:** shows/hides angle arcs and degree labels (active with the geometry grid; saved).
 - Tests: 89 passing (new `tests/sandbox/history.test.ts`). Desktop app rebuilt and checked.
+
+- **Merged to `main`** (user-approved fast-forward); TSK-UI-006 → COMPLETE. Gemini: `git pull origin main` before new work.
