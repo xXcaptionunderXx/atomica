@@ -5,7 +5,20 @@
  * cofactors, closed compartments and substrates they need are all present.
  */
 import type { MoleculeTemplate } from '../sandbox/MoleculeModel';
-import { AMINO_ACIDS, BLUEPRINT_BY_ID, COMPONENTS, GENETIC_CODE, NTPS, type Blueprint, type MembraneSpec, type Reaction, type SlotSpec } from './blueprints';
+import {
+  AMINO_ACIDS,
+  BLUEPRINT_BY_ID,
+  COMPONENTS,
+  DEFAULT_ROLES,
+  GENETIC_CODE,
+  NTPS,
+  apportion,
+  type Blueprint,
+  type Composition,
+  type MembraneSpec,
+  type Reaction,
+  type SlotSpec,
+} from './blueprints';
 import type { MoleculeRole } from './classify';
 import type { Species } from './identify';
 
@@ -171,10 +184,89 @@ export class OrganelleModel {
   }
 
   // ---------- building ----------
-  /** Start (or replace) the single organelle. Surrounding molecules stay. */
-  setBlueprint(id: string | null): boolean {
+  /**
+   * Start (or replace) the single organelle. Surrounding molecules stay.
+   * 'built' places it complete — real lipid composition, every protein and cofactor — and stocks the
+   * substrates its reactions use; 'empty' gives the bare blueprint to build yourself.
+   */
+  setBlueprint(id: string | null, mode: 'built' | 'empty' = 'empty'): boolean {
     if (id && !BLUEPRINT_BY_ID[id]) return false;
-    return this.act(() => this.applyBlueprint(id));
+    return this.act(() => {
+      this.applyBlueprint(id);
+      if (id && mode === 'built') {
+        this.fillMissing();
+        this.stockFeed();
+      }
+    });
+  }
+
+  /** Fill everything still missing (lipids by real composition, proteins, cofactors). Keeps what you built. */
+  completeOrganelle(): boolean {
+    if (!this.blueprint) return false;
+    return this.act(() => this.fillMissing());
+  }
+
+  private fillMissing(): void {
+    const bp = this.blueprint;
+    if (!bp) return;
+    for (const m of bp.membranes) this.completeMembrane(m);
+    for (const sl of bp.slots) {
+      const comp: Composition = sl.fill ?? (sl.species ? [[sl.species[0], 1]] : []);
+      this.completeList(this.s.slots[sl.id], comp, sl.count);
+      for (const [k] of comp) this.s.roles[k] ??= DEFAULT_ROLES[k] ?? sl.role ?? 'molecule';
+    }
+    for (const p of bp.parts) this.s.proteins[p.component] = Math.max(this.s.proteins[p.component] ?? 0, p.count);
+  }
+
+  private completeMembrane(spec: MembraneSpec): void {
+    const members = this.s.membranes[spec.id];
+    const count = (k: string) => members.filter((x) => x === k).length;
+    // Required lipids first (replacing non-required filler if the membrane is already full).
+    const required = new Set((spec.requires ?? []).map((r) => r.species));
+    for (const r of spec.requires ?? []) {
+      while (count(r.species) < r.min) {
+        if (members.length < spec.units) members.push(r.species);
+        else {
+          const idx = members.findIndex((k) => !required.has(k));
+          if (idx < 0) break;
+          this.toPool(members[idx]);
+          members[idx] = r.species;
+        }
+      }
+    }
+    this.completeList(members, spec.composition, spec.units);
+    for (const [k] of spec.composition) this.s.roles[k] ??= DEFAULT_ROLES[k] ?? 'bilayer-lipid';
+  }
+
+  /** Append to `list` up to `n` entries following `comp`, interleaving species evenly around the membrane. */
+  private completeList(list: string[], comp: Composition, n: number): void {
+    if (!comp.length) return;
+    const target = apportion(comp, n);
+    const have = new Map<string, number>();
+    for (const k of list) have.set(k, (have.get(k) ?? 0) + 1);
+    while (list.length < n) {
+      const k = list.length + 1;
+      let best = comp[0][0];
+      let bestScore = -Infinity;
+      for (const [sp] of comp) {
+        const score = ((target.get(sp) ?? 0) * k) / n - (have.get(sp) ?? 0);
+        if (score > bestScore) {
+          bestScore = score;
+          best = sp;
+        }
+      }
+      list.push(best);
+      have.set(best, (have.get(best) ?? 0) + 1);
+    }
+  }
+
+  private stockFeed(): void {
+    const bp = this.blueprint;
+    if (!bp) return;
+    for (const [k, n] of Object.entries(bp.feed)) {
+      this.s.pools[k] = (this.s.pools[k] ?? 0) + n;
+      this.s.roles[k] ??= 'molecule';
+    }
   }
 
   private applyBlueprint(id: string | null): void {
@@ -331,14 +423,8 @@ export class OrganelleModel {
 
   /** Add the blueprint's demonstration substrates to the surroundings. */
   stockSurroundings(): boolean {
-    const bp = this.blueprint;
-    if (!bp) return false;
-    return this.act(() => {
-      for (const [k, n] of Object.entries(bp.feed)) {
-        this.s.pools[k] = (this.s.pools[k] ?? 0) + n;
-        this.s.roles[k] ??= 'molecule';
-      }
-    });
+    if (!this.blueprint) return false;
+    return this.act(() => this.stockFeed());
   }
 
   setLight(on: boolean): boolean {

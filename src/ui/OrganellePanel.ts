@@ -166,6 +166,16 @@ export function initOrganellePanel(root: HTMLElement, model: OrganelleModel, cb:
         h('div', { class: 'org-progress' }, h('div', { style: `width:${Math.round(st.progress * 100)}%` })),
         h('p', { class: 'meta' }, bp.summary),
       );
+      if (!st.complete) {
+        head.append(
+          h(
+            'div',
+            { class: 'org-row-btns' },
+            button('Complete it', 'Fill everything still missing with the real composition (keeps what you built)', () => model.completeOrganelle(), 'primary'),
+            h('span', { class: 'meta' }, 'or keep building it yourself'),
+          ),
+        );
+      }
     }
 
     // Build checklist

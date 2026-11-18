@@ -292,15 +292,20 @@ const organellePanel = initOrganellePanel($<HTMLElement>('#organelle-panel'), or
 });
 initOrganelleLibrary($<HTMLElement>('#organelle-library'), {
   dropZone: () => document.querySelector<HTMLElement>('#organelle-view')?.parentElement ?? null,
-  onBlueprint: (id, x, y) => {
+  onBlueprint: (id, x, y, built) => {
     if (x !== undefined && y !== undefined && !organelleView.isOverSandbox(x, y)) return; // dropped outside the sandbox
     const prev = organelle.blueprint;
     if (prev?.id === id) {
-      notify(`${prev.name} is already being built`);
+      if (built && !organelle.status().complete) {
+        organelle.completeOrganelle();
+        notify(`Completed the ${prev.name.toLowerCase()} (Ctrl+Z undoes)`);
+      } else notify(`The ${prev.name.toLowerCase()} is already here`);
       return;
     }
-    organelle.setBlueprint(id);
-    notify(prev ? `Replaced the ${prev.name.toLowerCase()} with a ${organelle.blueprint!.name.toLowerCase()} (Ctrl+Z undoes)` : `Started a ${organelle.blueprint!.name.toLowerCase()}`);
+    organelle.setBlueprint(id, built ? 'built' : 'empty');
+    const name = organelle.blueprint!.name.toLowerCase();
+    const what = built ? `a fully built ${name}` : `an empty ${name} — build it from lipids you paste`;
+    notify(prev ? `Replaced the ${prev.name.toLowerCase()} with ${what} (Ctrl+Z undoes)` : `Placed ${what}`);
   },
   onMolecule: (m, x, y) => {
     const dropped = x !== undefined && y !== undefined;

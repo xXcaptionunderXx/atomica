@@ -3,7 +3,7 @@ import libraryData from '../../src/chemistry/biomolecules/library.json';
 import catalogData from '../../src/organelle/catalog.json';
 import { decode, toTemplate, type Biomolecule, type RawBiomolecule } from '../../src/chemistry/biomolecules/library';
 import { parseFormula } from '../../src/chemistry/compoundNames';
-import { AMINO_ACIDS, BLUEPRINTS, COMPONENTS, NTPS } from '../../src/organelle/blueprints';
+import { AMINO_ACIDS, BLUEPRINTS, COMPONENTS, DEFAULT_ROLES, NTPS, apportion } from '../../src/organelle/blueprints';
 import { classifyTemplate } from '../../src/organelle/classify';
 import { decodeCatalog, searchCatalog } from '../../src/organelle/catalog';
 import { identify, identifyAll, indexLibrary, type Species } from '../../src/organelle/identify';
@@ -115,6 +115,55 @@ describe('structural classification', () => {
     const copied = atomic.extract(atomic.getAtoms().map((a) => a.id))!;
     const keys = identifyAll(copied, lib).map((s) => s.key).sort();
     expect(keys).toEqual(['Cholesterol', 'POPC (palmitoyl-oleoyl phosphatidylcholine)']);
+  });
+});
+
+describe('fully built organelles (default placement)', () => {
+  it('default membrane compositions use real library lipids that the membrane accepts', () => {
+    for (const bp of BLUEPRINTS) {
+      for (const mem of bp.membranes) {
+        const sum = mem.composition.reduce((s, [, f]) => s + f, 0);
+        expect(sum, `${bp.id}/${mem.id}`).toBeCloseTo(1, 6);
+        for (const [sp] of mem.composition) {
+          const role = classifyTemplate(toTemplate(byName(sp), 0, 0, 1)).role;
+          expect(role, `${bp.id}/${mem.id}/${sp}`).toBe(DEFAULT_ROLES[sp] ?? 'bilayer-lipid');
+          expect(mem.accepts, `${bp.id}/${mem.id}/${sp}`).toContain(role);
+        }
+        const counts = apportion(mem.composition, mem.units);
+        expect([...counts.values()].reduce((a, b) => a + b, 0)).toBe(mem.units);
+        for (const r of mem.requires ?? []) expect(counts.get(r.species) ?? 0, `${bp.id}/${mem.id} ${r.species}`).toBeGreaterThanOrEqual(r.min);
+      }
+      for (const sl of bp.slots) for (const [sp] of sl.fill ?? []) expect(lib.byName.has(sp), sp).toBe(true);
+    }
+  });
+
+  it('every organelle placed fully built is complete and all of its reactions run', () => {
+    for (const bp of BLUEPRINTS) {
+      const m = new OrganelleModel();
+      m.setBlueprint(bp.id, 'built');
+      expect(m.status().complete, bp.id).toBe(true);
+      for (let i = 0; i < 30; i++) m.tick();
+      for (const r of bp.reactions) expect(m.state.turnovers[r.id] ?? 0, `${bp.id}/${r.id}`).toBeGreaterThan(0);
+    }
+  });
+
+  it('the mitochondrial inner membrane gets its real cardiolipin share', () => {
+    const m = new OrganelleModel();
+    m.setBlueprint('mitochondrion', 'built');
+    const inner = m.status().membranes.find((x) => x.spec.id === 'inner')!;
+    expect(inner.members.filter((k) => k === 'Cardiolipin (tetralinoleoyl)').length).toBe(7); // 18% of 40
+  });
+
+  it('"empty" placement leaves it to build, and Complete keeps what you built', () => {
+    const m = new OrganelleModel();
+    m.setBlueprint('lysosome', 'empty');
+    expect(m.status().progress).toBe(0);
+    m.addSpecies([species('DOPC (dioleoylphosphatidylcholine)')], 5);
+    m.completeOrganelle();
+    expect(m.status().complete).toBe(true);
+    expect(m.status().membranes[0].members.filter((k) => k.startsWith('DOPC')).length).toBe(5);
+    m.undo();
+    expect(m.status().complete).toBe(false);
   });
 });
 

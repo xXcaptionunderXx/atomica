@@ -408,3 +408,7 @@ button.small { padding: 1px 7px; font-size: 11px; margin-left: 6px; text-transfo
 #organelle-library .lib-item.draggable { cursor: grab; }
 .organelle-ghost { width: auto !important; height: auto !important; padding: 4px 10px; margin: -14px 0 0 12px !important; border-radius: 10px !important; font-size: 12px; font-weight: 650; white-space: nowrap; background: var(--surface); color: var(--text); border-color: #7c3aed !important; }
 .sandbox-wrap.drop-over { box-shadow: inset 0 0 0 3px var(--accent); }
+
+/* fully built / empty placement (TSK-UI-009) */
+.place-seg { display: flex; }
+.place-seg button { flex: 1; font-size: 12px; padding: 4px 6px; }

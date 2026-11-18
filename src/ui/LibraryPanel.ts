@@ -183,8 +183,8 @@ function escapeHtml(s: string): string {
 // ---------------------------------------------------------------------------
 
 export interface OrganelleLibraryCallbacks {
-  /** Click (no position) or drop at a screen position. */
-  onBlueprint(id: string, clientX?: number, clientY?: number): void;
+  /** Click (no position) or drop at a screen position; `built` = place it complete (the default). */
+  onBlueprint(id: string, clientX: number | undefined, clientY: number | undefined, built: boolean): void;
   onMolecule(m: Biomolecule, clientX?: number, clientY?: number): void;
   /** The organelle sandbox, highlighted while something is dragged over it. */
   dropZone?: () => HTMLElement | null;
@@ -198,6 +198,10 @@ export function initOrganelleLibrary(root: HTMLElement, cb: OrganelleLibraryCall
       </button>
     </div>
     <div class="lib-body">
+      <div class="seg place-seg" role="group" aria-label="How organelles are placed" title="How a dragged or clicked organelle arrives">
+        <button type="button" data-place="built" title="Arrives complete: real lipid composition, every protein and cofactor, substrates stocked">Fully built</button>
+        <button type="button" data-place="empty" title="Arrives as an empty blueprint: build its membranes from lipids you paste">Empty — build it</button>
+      </div>
       <input type="search" class="lib-search" placeholder="Search: mitochondrion, ribosome, GO:0005764…" aria-label="Search organelles" />
       <select class="lib-category" aria-label="Category"></select>
       <div class="lib-status">Loading catalogue…</div>
@@ -216,6 +220,28 @@ export function initOrganelleLibrary(root: HTMLElement, cb: OrganelleLibraryCall
     root.classList.toggle('collapsed', c);
     collapse.setAttribute('aria-expanded', String(!c));
   });
+
+  // Fully built (default) or empty placement, remembered.
+  let built = true;
+  try {
+    built = localStorage.getItem('atomica-organelle-place') !== 'empty';
+  } catch {
+    /* storage unavailable */
+  }
+  const placeButtons = [...root.querySelectorAll<HTMLButtonElement>('.place-seg button')];
+  const syncPlace = () => placeButtons.forEach((b) => b.classList.toggle('active', (b.dataset.place === 'built') === built));
+  for (const b of placeButtons)
+    b.addEventListener('click', () => {
+      built = b.dataset.place === 'built';
+      syncPlace();
+      try {
+        localStorage.setItem('atomica-organelle-place', built ? 'built' : 'empty');
+      } catch {
+        /* storage unavailable */
+      }
+    });
+  syncPlace();
+  const place = (id: string, x?: number, y?: number) => cb.onBlueprint(id, x, y, built);
 
   let terms: CatalogTerm[] = [];
   let groups: string[] = [];
@@ -252,7 +278,7 @@ export function initOrganelleLibrary(root: HTMLElement, cb: OrganelleLibraryCall
           ? `<button type="button" class="primary lib-build">Build ${escapeHtml(bp.name)}</button>${bp.go === t.id ? '' : `<div class="lib-meta">Part of / found in the buildable ${escapeHtml(bp.name.toLowerCase())}</div>`}`
           : '<div class="lib-meta">Catalogue entry (real GO term) — not yet buildable. Buildable organelles are marked “Build”.</div>'
       }`;
-    detail.querySelector('.lib-build')?.addEventListener('click', () => cb.onBlueprint(bp!.id));
+    detail.querySelector('.lib-build')?.addEventListener('click', () => place(bp!.id));
   };
 
   const render = () => {
@@ -270,14 +296,14 @@ export function initOrganelleLibrary(root: HTMLElement, cb: OrganelleLibraryCall
       const ql = q.trim().toLowerCase();
       const bps = BLUEPRINTS.filter((b) => !ql || b.name.toLowerCase().includes(ql) || b.go.toLowerCase().includes(ql));
       if (cat === '' || cat === 'buildable') {
-        nodes.push(...bps.map((b) => item(b.name, `<span>${b.go}</span><span class="lib-cat">buildable</span>`, `${b.summary}\nClick or drag into the sandbox to build (replaces the current organelle)`, () => cb.onBlueprint(b.id), 'Build', (x, y) => cb.onBlueprint(b.id, x, y))));
+        nodes.push(...bps.map((b) => item(b.name, `<span>${b.go}</span><span class="lib-cat">buildable</span>`, `${b.summary}\nClick or drag into the sandbox to place it (replaces the current organelle)`, () => place(b.id), 'Build', (x, y) => place(b.id, x, y))));
         total += bps.length;
       }
       if (cat !== 'buildable') {
         const hits = searchCatalog(terms, q, cat || undefined);
         total += hits.length;
         nodes.push(
-          ...hits.slice(0, RENDER_LIMIT).map((t) => item(t.name, `<span>${t.id}</span><span class="lib-cat">${escapeHtml(t.group)}</span>`, `${t.definition}\nClick for details${t.blueprint ? ` · drag into the sandbox to build the ${BLUEPRINT_BY_ID[t.blueprint].name.toLowerCase()}` : ''}`, () => showTerm(t), t.blueprint && BLUEPRINT_BY_ID[t.blueprint].go === t.id ? 'Build' : undefined, t.blueprint ? (x, y) => cb.onBlueprint(t.blueprint!, x, y) : undefined)),
+          ...hits.slice(0, RENDER_LIMIT).map((t) => item(t.name, `<span>${t.id}</span><span class="lib-cat">${escapeHtml(t.group)}</span>`, `${t.definition}\nClick for details${t.blueprint ? ` · drag into the sandbox to build the ${BLUEPRINT_BY_ID[t.blueprint].name.toLowerCase()}` : ''}`, () => showTerm(t), t.blueprint && BLUEPRINT_BY_ID[t.blueprint].go === t.id ? 'Build' : undefined, t.blueprint ? (x, y) => place(t.blueprint!, x, y) : undefined)),
         );
       }
     }

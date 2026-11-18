@@ -15,6 +15,10 @@
  *    mole fractions (e.g. cardiolipin is ~15-20% of inner-mitochondrial-membrane phospholipid).
  *  - Proteins cannot be assembled atom by atom in a 2D sandbox; they are added as referenced parts.
  *  - Reactions fire as discrete turnovers per tick when their machinery is present, not as kinetics.
+ *  - Default membrane compositions are approximate mole fractions from the lipidomics literature
+ *    (e.g. van Meer, Voelker & Feigenson 2008, Nat Rev Mol Cell Biol 9:112; plastid galactolipids
+ *    after Dörmann & Benning 2002). Classes missing from the molecule library (PI, BMP, SQDG…) are
+ *    folded into the nearest class that is present (PS for anionic lipids, PG for SQDG).
  */
 import type { MoleculeRole } from './classify';
 
@@ -51,7 +55,12 @@ export interface MembraneSpec {
   accepts: MoleculeRole[];
   /** Minimum counts of particular species (real composition requirements). */
   requires?: { species: string; min: number; why: string }[];
+  /** Approximate real lipid mole fractions, used when the organelle is placed fully built. */
+  composition: Composition;
 }
+
+/** [library species, mole fraction] — fractions of one membrane sum to 1. */
+export type Composition = [species: string, fraction: number][];
 
 export interface SlotSpec {
   id: string;
@@ -61,6 +70,8 @@ export interface SlotSpec {
   role?: MoleculeRole;
   count: number;
   why: string;
+  /** What a fully built organelle holds here (defaults to the first accepted species). */
+  fill?: Composition;
 }
 
 export interface PartSpec {
@@ -197,7 +208,7 @@ export const BLUEPRINTS: Blueprint[] = [
     summary:
       'Double-membrane organelle that oxidises pyruvate and fatty acids. Electron transport in the cardiolipin-rich inner membrane pumps protons; ATP synthase uses that gradient to make ATP.',
     membranes: [
-      { id: 'outer', name: 'Outer membrane', kind: 'bilayer', units: 28, accepts: BILAYER },
+      { id: 'outer', name: 'Outer membrane', kind: 'bilayer', units: 28, accepts: BILAYER, composition: [['POPC (palmitoyl-oleoyl phosphatidylcholine)', 0.52], ['POPE', 0.3], ['POPS', 0.1], ['Cardiolipin (tetralinoleoyl)', 0.04], ['Cholesterol', 0.04]] },
       {
         id: 'inner',
         name: 'Inner membrane (cristae)',
@@ -205,6 +216,7 @@ export const BLUEPRINTS: Blueprint[] = [
         units: 40,
         accepts: ['bilayer-lipid'],
         requires: [{ species: 'Cardiolipin (tetralinoleoyl)', min: 6, why: 'Cardiolipin (~15-20% of inner-membrane phospholipid) holds complexes III/IV and ATP-synthase dimers together' }],
+        composition: [['POPC (palmitoyl-oleoyl phosphatidylcholine)', 0.4], ['POPE', 0.37], ['Cardiolipin (tetralinoleoyl)', 0.18], ['POPS', 0.05]],
       },
     ],
     parts: [
@@ -258,8 +270,8 @@ export const BLUEPRINTS: Blueprint[] = [
     summary:
       'Plastid that captures light. Pigments in the galactolipid thylakoid membrane drive water splitting and electron transport; the stroma fixes CO2 into sugar (Calvin cycle).',
     membranes: [
-      { id: 'outer', name: 'Outer envelope', kind: 'bilayer', units: 28, accepts: BILAYER },
-      { id: 'inner', name: 'Inner envelope', kind: 'bilayer', units: 26, accepts: BILAYER },
+      { id: 'outer', name: 'Outer envelope', kind: 'bilayer', units: 28, accepts: BILAYER, composition: [['POPC (palmitoyl-oleoyl phosphatidylcholine)', 0.33], ['Monogalactosyldiacylglycerol (MGDG, thylakoid lipid)', 0.18], ['Digalactosyldiacylglycerol (DGDG, thylakoid lipid)', 0.3], ['POPG', 0.19]] },
+      { id: 'inner', name: 'Inner envelope', kind: 'bilayer', units: 26, accepts: BILAYER, composition: [['Monogalactosyldiacylglycerol (MGDG, thylakoid lipid)', 0.52], ['Digalactosyldiacylglycerol (DGDG, thylakoid lipid)', 0.3], ['POPG', 0.18]] },
       {
         id: 'thylakoid',
         name: 'Thylakoid membrane (grana)',
@@ -270,6 +282,7 @@ export const BLUEPRINTS: Blueprint[] = [
           { species: 'Monogalactosyldiacylglycerol (MGDG, thylakoid lipid)', min: 14, why: 'MGDG is ~50% of thylakoid lipid' },
           { species: 'Digalactosyldiacylglycerol (DGDG, thylakoid lipid)', min: 7, why: 'DGDG is ~25% of thylakoid lipid' },
         ],
+        composition: [['Monogalactosyldiacylglycerol (MGDG, thylakoid lipid)', 0.52], ['Digalactosyldiacylglycerol (DGDG, thylakoid lipid)', 0.3], ['POPG', 0.18]],
       },
     ],
     parts: [
@@ -350,8 +363,8 @@ export const BLUEPRINTS: Blueprint[] = [
     shape: 'nucleus',
     summary: 'Holds the chromatin. RNA polymerase II transcribes genes into mRNA, which leaves through nuclear pores to be translated by ribosomes.',
     membranes: [
-      { id: 'outer', name: 'Outer nuclear membrane', kind: 'bilayer', units: 34, accepts: BILAYER },
-      { id: 'inner', name: 'Inner nuclear membrane', kind: 'bilayer', units: 30, accepts: BILAYER },
+      { id: 'outer', name: 'Outer nuclear membrane', kind: 'bilayer', units: 34, accepts: BILAYER, composition: [['POPC (palmitoyl-oleoyl phosphatidylcholine)', 0.58], ['POPE', 0.22], ['POPS', 0.08], ['Cholesterol', 0.07], ['Sphingomyelin (C16)', 0.05]] },
+      { id: 'inner', name: 'Inner nuclear membrane', kind: 'bilayer', units: 30, accepts: BILAYER, composition: [['POPC (palmitoyl-oleoyl phosphatidylcholine)', 0.58], ['POPE', 0.22], ['POPS', 0.08], ['Cholesterol', 0.07], ['Sphingomyelin (C16)', 0.05]] },
     ],
     parts: [
       { component: 'npc', count: 4, where: 'outer' },
@@ -380,7 +393,7 @@ export const BLUEPRINTS: Blueprint[] = [
     go: 'GO:0005783',
     shape: 'er',
     summary: 'Network of membrane sheets and tubules. Imports and folds secretory proteins (Sec61, BiP) and stores calcium pumped in by SERCA.',
-    membranes: [{ id: 'er', name: 'ER membrane', kind: 'bilayer', units: 40, accepts: BILAYER }],
+    membranes: [{ id: 'er', name: 'ER membrane', kind: 'bilayer', units: 40, accepts: BILAYER, composition: [['POPC (palmitoyl-oleoyl phosphatidylcholine)', 0.58], ['POPE', 0.22], ['POPS', 0.08], ['Cholesterol', 0.07], ['Sphingomyelin (C16)', 0.05]] }],
     parts: [
       { component: 'sec61', count: 2, where: 'er' },
       { component: 'serca', count: 2, where: 'er' },
@@ -408,7 +421,7 @@ export const BLUEPRINTS: Blueprint[] = [
     go: 'GO:0005794',
     shape: 'golgi',
     summary: 'Stack of flattened cisternae that modifies and sorts cargo. In the trans-Golgi, sphingomyelin synthase makes sphingomyelin from ceramide.',
-    membranes: [{ id: 'golgi', name: 'Cisternal membranes', kind: 'bilayer', units: 36, accepts: BILAYER }],
+    membranes: [{ id: 'golgi', name: 'Cisternal membranes', kind: 'bilayer', units: 36, accepts: BILAYER, composition: [['POPC (palmitoyl-oleoyl phosphatidylcholine)', 0.45], ['POPE', 0.2], ['POPS', 0.07], ['Sphingomyelin (C16)', 0.1], ['Cholesterol', 0.18]] }],
     parts: [
       { component: 'gm130', count: 2, where: 'golgi' },
       { component: 'sgms1', count: 2, where: 'golgi' },
@@ -435,7 +448,7 @@ export const BLUEPRINTS: Blueprint[] = [
     go: 'GO:0005764',
     shape: 'lysosome',
     summary: 'Acidic digestive compartment. The V-ATPase pumps protons in (pH ≈ 4.5-5); acid hydrolases only work once the lumen is acidic.',
-    membranes: [{ id: 'membrane', name: 'Lysosomal membrane', kind: 'bilayer', units: 30, accepts: BILAYER }],
+    membranes: [{ id: 'membrane', name: 'Lysosomal membrane', kind: 'bilayer', units: 30, accepts: BILAYER, composition: [['POPC (palmitoyl-oleoyl phosphatidylcholine)', 0.4], ['POPE', 0.17], ['POPS', 0.05], ['Sphingomyelin (C16)', 0.13], ['Cholesterol', 0.25]] }],
     parts: [
       { component: 'v-atpase', count: 1, where: 'membrane' },
       { component: 'lamp1', count: 2, where: 'membrane' },
@@ -491,7 +504,7 @@ export const BLUEPRINTS: Blueprint[] = [
     go: 'GO:0005777',
     shape: 'peroxisome',
     summary: 'Single-membrane oxidative organelle. Oxidases such as DAAO make hydrogen peroxide; catalase destroys it.',
-    membranes: [{ id: 'membrane', name: 'Peroxisomal membrane', kind: 'bilayer', units: 24, accepts: BILAYER }],
+    membranes: [{ id: 'membrane', name: 'Peroxisomal membrane', kind: 'bilayer', units: 24, accepts: BILAYER, composition: [['POPC (palmitoyl-oleoyl phosphatidylcholine)', 0.56], ['POPE', 0.28], ['POPS', 0.06], ['Cholesterol', 0.1]] }],
     parts: [
       { component: 'pex5', count: 1, where: 'membrane' },
       { component: 'daao', count: 1, where: 'lumen' },
@@ -530,12 +543,21 @@ export const BLUEPRINTS: Blueprint[] = [
     go: 'GO:0005811',
     shape: 'lipid-droplet',
     summary: 'Neutral-lipid store: a triglyceride core wrapped in a phospholipid MONOlayer (not a bilayer), coated by perilipins. ATGL starts lipolysis.',
-    membranes: [{ id: 'monolayer', name: 'Phospholipid monolayer', kind: 'monolayer', units: 24, accepts: ['bilayer-lipid'] }],
+    membranes: [{ id: 'monolayer', name: 'Phospholipid monolayer', kind: 'monolayer', units: 24, accepts: ['bilayer-lipid', 'sterol'], composition: [['POPC (palmitoyl-oleoyl phosphatidylcholine)', 0.65], ['POPE', 0.25], ['POPS', 0.05], ['Cholesterol', 0.05]] }],
     parts: [
       { component: 'plin1', count: 2, where: 'monolayer' },
       { component: 'atgl', count: 1, where: 'monolayer' },
     ],
-    slots: [{ id: 'core', name: 'Neutral-lipid core', role: 'neutral-lipid', count: 8, why: 'Triglycerides / cholesteryl esters fill the droplet' }],
+    slots: [
+      {
+        id: 'core',
+        name: 'Neutral-lipid core',
+        role: 'neutral-lipid',
+        count: 8,
+        why: 'Triglycerides / cholesteryl esters fill the droplet',
+        fill: [['Triolein', 0.75], ['Cholesteryl oleate', 0.25]],
+      },
+    ],
     reactions: [
       {
         id: 'atgl',
@@ -595,7 +617,7 @@ export const BLUEPRINTS: Blueprint[] = [
     go: 'GO:0031982',
     shape: 'vesicle',
     summary: 'A closed lipid bilayer — the simplest membrane compartment. Pasting any bilayer lipid with no organelle chosen starts one.',
-    membranes: [{ id: 'membrane', name: 'Bilayer', kind: 'bilayer', units: 24, accepts: BILAYER }],
+    membranes: [{ id: 'membrane', name: 'Bilayer', kind: 'bilayer', units: 24, accepts: BILAYER, composition: [['POPC (palmitoyl-oleoyl phosphatidylcholine)', 0.6], ['POPE', 0.2], ['Cholesterol', 0.2]] }],
     parts: [],
     slots: [],
     reactions: [],
@@ -604,6 +626,29 @@ export const BLUEPRINTS: Blueprint[] = [
 ];
 
 export const BLUEPRINT_BY_ID: Record<string, Blueprint> = Object.fromEntries(BLUEPRINTS.map((b) => [b.id, b]));
+
+/**
+ * Structural role of the non-phospholipids used in default compositions (checked against the
+ * atom-graph classifier in tests/organelle/organelle.test.ts); everything else is a bilayer lipid.
+ */
+export const DEFAULT_ROLES: Record<string, MoleculeRole> = {
+  Cholesterol: 'sterol',
+  Triolein: 'neutral-lipid',
+  'Cholesteryl oleate': 'neutral-lipid',
+};
+
+/** Split `n` places among fractions (largest remainder), so counts sum to exactly `n`. */
+export function apportion(comp: Composition, n: number): Map<string, number> {
+  const total = comp.reduce((s, [, f]) => s + f, 0) || 1;
+  const raw = comp.map(([k, f]) => ({ k, x: (f / total) * n }));
+  const out = new Map(raw.map((r) => [r.k, Math.floor(r.x)]));
+  let left = n - [...out.values()].reduce((a, b) => a + b, 0);
+  for (const r of [...raw].sort((a, b) => (b.x % 1) - (a.x % 1))) {
+    if (left-- <= 0) break;
+    out.set(r.k, out.get(r.k)! + 1);
+  }
+  return out;
+}
 
 /** Standard genetic code (RNA codons → one-letter amino acid, '*' = stop). */
 const BASES = 'UCAG';
