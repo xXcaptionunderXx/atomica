@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ATOMICA Sandbox</title>
+    <script>
+      // Apply saved/system theme before first paint to avoid a flash.
+      (function () {
+        var t = null;
+        try { t = localStorage.getItem('atomica-theme'); } catch (e) {}
+        if (t !== 'light' && t !== 'dark') {
+          t = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+        document.documentElement.dataset.theme = t;
+      })();
+    </script>
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">ATOMICA <span>2D Molecule Sandbox</span></div>
+      <div id="element-info" class="element-info">Drag an element into the sandbox</div>
+      <div class="actions">
+        <button id="clear-btn" type="button">Clear</button>
+        <button id="theme-btn" type="button" aria-label="Toggle light/dark mode"></button>
+      </div>
+    </header>
+    <section id="periodic-table" class="periodic-table" aria-label="Periodic table"></section>
+    <main class="workspace">
+      <svg id="sandbox" class="sandbox" aria-label="Molecule sandbox"></svg>
+      <aside class="panel">
+        <h2>Molecules</h2>
+        <ul id="fragments"></ul>
+        <details class="help" open>
+          <summary>How to use</summary>
+          <ul>
+            <li>Drag an element from the table into the sandbox.</li>
+            <li>Drop it <b>on an atom</b> to bond it there.</li>
+            <li>Click an atom, then another atom, to bond them. Repeat for double/triple.</li>
+            <li>With an atom selected, click an element in the table to attach it.</li>
+            <li>Click a bond to cycle single → double → triple.</li>
+            <li>Drag atoms to move them. Right-click or <kbd>Delete</kbd> removes.</li>
+          </ul>
+          <p class="note">Bonding uses common valences as an approximation; it ignores formal charges,
+            coordinate bonds and ionic/metallic character. Dashed ring = unfilled valence.</p>
+        </details>
+      </aside>
+      <div id="toast" class="toast" role="status"></div>
+    </main>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

@@ -4,6 +4,12 @@
 
 ---
 
+## ⚠ Current Directive (2026-11-18, from user)
+
+**2D first, 3D paused.** The only active goal is TSK-UI-001: a working 2D sandbox with a periodic-table UI at the top of the screen, drag-and-drop elements into the sandbox, bonding atoms where chemically possible, and a light/dark theme. All 3D tasks (TSK-ENG-004 viewport / Mol*, any Three.js rendering) are PAUSED. Nothing else proceeds until the user has tested the sandbox.
+
+---
+
 ## Immediate Next Steps (Phase 0: Pre-Development Research)
 
 1. **Sprint Goal: Complete Fundamental Scientific Research Documents**

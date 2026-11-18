@@ -118,3 +118,16 @@
   - PDB 1BMF is bovine F1-ATPase (catalytic head only), used as a homolog for human Complex V; flagged in the node's `approximation` field.
 - **Governance note:** CLAUDE.md §3 says no production code before Phase 0 sign-off in `RESEARCH_APPROVAL.md`, which does not exist yet; TSK-ENG-001 already shipped code. Needs a user decision to formally close or waive the gate.
 - **Next Steps:** Review/merge; TSK-ENG-004 viewport can subscribe to `NavigationState` and use `structure` refs to load PDB/PubChem data.
+
+---
+
+### [2026-11-18] Session 005: 2D Molecule Sandbox (TSK-UI-001) — 3D paused
+- **Agent:** Claude
+- **User directive:** Everything runs in 2D first. All 3D work (TSK-ENG-004 viewport / Mol*, Three.js) is PAUSED until the user has tested this sandbox. No other feature work until then.
+- **Summary:**
+  - `src/chemistry/elements.ts`: all 118 elements (IUPAC standard atomic weights; bracketed mass numbers for elements without one), categories, 18-column + f-block layout, CPK colours, and a labelled valence approximation used as the bonding rule.
+  - `src/sandbox/MoleculeModel.ts`: atoms/bonds, valence-limited bonding (orders 1–3), bond-order cycling, fragments, Hill formulas, molecular weights.
+  - UI (`index.html`, `src/main.ts`, `src/styles.css`, `src/ui/*`): periodic table across the top; drag an element into the sandbox, drop on an atom to bond; click atom→atom to bond (repeat for double/triple); click a tile with an atom selected to attach; click bond to cycle order; drag to move; right-click / Delete to remove; light (white) / dark (grey-black) theme toggle, persisted.
+  - Tests: `tests/chemistry/elements.test.ts`, `tests/sandbox/molecule.test.ts` (15 tests). Verified in-browser: H2O built by drag-drop, third H refused with message, click-bonding, theme switch.
+  - Dev server port moved 3000 → 5317 (3000 collides with another local project).
+- **Approximation:** bonding capacity = max common valence/oxidation state; no formal charges, dative, ionic or metallic bonding.
