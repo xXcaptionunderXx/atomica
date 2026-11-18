@@ -56,7 +56,7 @@
       "signAndEditExecutable": false
     },
     "portable": {
-      "artifactName": "ATOMICA-Sandbox-${version}.exe"
+      "artifactName": "ATOMICA-Sandbox.exe"
     }
   }
 }

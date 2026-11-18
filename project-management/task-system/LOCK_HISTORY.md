@@ -12,3 +12,5 @@
 | 2026-11-18 21:00:50 | `CLAIM` | `agent/gemini` | `TSK-DOC-002` | `docs/obsidian` | Granted 12.0h lock lease. |
 | 2026-11-18 21:02:06 | `CLAIM` | `agent/claude` | `TSK-UI-002` | `package.json`<br>`package-lock.json`<br>`vite.config.ts`<br>`electron`<br>`.gitignore` | Granted 12.0h lock lease. |
 | 2026-11-18 21:04:30 | `RELEASE` | `agent/claude` | `TSK-UI-002` | `package.json`<br>`package-lock.json`<br>`vite.config.ts`<br>`electron`<br>`.gitignore` | Electron shell + portable exe build (npm run app:build) |
+| 2026-11-18 21:06:37 | `CLAIM` | `agent/claude` | `TSK-UI-003` | `package.json`<br>`CLAUDE.md`<br>`project-management/task-system/COORDINATOR_RULES.md`<br>`scripts/install-desktop-shortcut.ps1` | Granted 12.0h lock lease. |
+| 2026-11-18 21:08:27 | `RELEASE` | `agent/claude` | `TSK-UI-003` | `package.json`<br>`CLAUDE.md`<br>`project-management/task-system/COORDINATOR_RULES.md`<br>`scripts/install-desktop-shortcut.ps1` | Stable exe path + desktop shortcut script; rebuild-after-change rule for both agents |

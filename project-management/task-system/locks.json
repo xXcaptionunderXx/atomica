@@ -68,6 +68,18 @@
       ],
       "claimedAt": "2026-11-18T21:02:06.633891+00:00",
       "releasedAt": "2026-11-18T21:04:30.501532+00:00"
+    },
+    "TSK-UI-003": {
+      "agent": "claude",
+      "status": "REVIEW",
+      "files": [
+        "package.json",
+        "CLAUDE.md",
+        "project-management/task-system/COORDINATOR_RULES.md",
+        "scripts/install-desktop-shortcut.ps1"
+      ],
+      "claimedAt": "2026-11-18T21:06:37.580353+00:00",
+      "releasedAt": "2026-11-18T21:08:27.031191+00:00"
     }
   }
 }

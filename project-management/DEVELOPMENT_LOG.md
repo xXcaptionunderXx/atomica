@@ -138,3 +138,9 @@
 - **Agent:** Claude
 - **Summary:** Wrapped the 2D sandbox in Electron (`electron/main.cjs`, sandboxed renderer, no Node integration). `npm run app` runs it in a window; `npm run app:build` produces a portable `release/ATOMICA-Sandbox-<version>.exe` (~75 MB, no install). Vite `base: './'` so the built `dist/` loads from disk. Verified the packaged app renders 118 element tiles and the themed sandbox.
 - **Note:** `win.signAndEditExecutable: false` — electron-builder's winCodeSign archive needs symlink privileges on Windows; the exe is unsigned anyway (SmartScreen may warn on first launch) and has the default Electron icon.
+
+---
+
+### [2026-11-18] Session 007: Desktop shortcut that always runs the latest build (TSK-UI-003)
+- **Agent:** Claude
+- **Summary:** Portable exe renamed to a stable `release/ATOMICA-Sandbox.exe`. Added `scripts/install-desktop-shortcut.ps1`, which creates the user's Desktop shortcut pointing at `release/win-unpacked/ATOMICA Sandbox.exe` (fast start, no self-extraction). Verified the shortcut launches the app. Added a MANDATORY rule (CLAUDE.md §9, COORDINATOR_RULES §6): after any app change, both agents rebuild with `npm run app:build` so the shortcut always opens the newest version.

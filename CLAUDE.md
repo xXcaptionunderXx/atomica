@@ -167,3 +167,23 @@ git push -u origin agent/claude/<feature-or-task-topic>
 ```
 
 Git credentials (via GitHub CLI / Windows Credential Manager) are already configured for account `xXcaptionunderXx` on this machine.
+
+---
+
+## 9. Desktop App: Keep the User's Shortcut Current (MANDATORY, both agents)
+
+The user launches ATOMICA from a Desktop shortcut (`ATOMICA Sandbox.lnk`) that points at the fixed path
+`release/win-unpacked/ATOMICA Sandbox.exe` in this repo. The user never replaces it by hand. Therefore:
+
+1. **After ANY change that affects the app** (`src/`, `index.html`, `electron/`, `vite.config.ts`, `package.json`),
+   once tests pass and before releasing your task lock, rebuild the app in place:
+   ```powershell
+   Stop-Process -Name "ATOMICA Sandbox" -Force -ErrorAction SilentlyContinue   # a running app blocks the rebuild
+   npm run app:build
+   ```
+2. **Then verify the shortcut still works:** `powershell -ExecutionPolicy Bypass -File scripts/install-desktop-shortcut.ps1`
+   (idempotent: recreates the shortcut if missing and fails loudly if the build is missing).
+3. Build from the branch that holds the newest app work, so the shortcut never regresses to older code.
+4. Never change the output path or exe name (`release/win-unpacked/ATOMICA Sandbox.exe`, portable copy `release/ATOMICA-Sandbox.exe`)
+   without updating the script and re-running it.
+5. Mention in your hand-off summary that the desktop app was rebuilt.
