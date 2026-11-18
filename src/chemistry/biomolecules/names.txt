@@ -899,6 +899,8 @@ PIP2 (phosphatidylinositol 4,5-bisphosphate)|phosphatidylinositol 4,5-bisphospha
 Lysophosphatidylcholine (palmitoyl)|1-palmitoyl-sn-glycero-3-phosphocholine
 Lysophosphatidic acid (oleoyl)|1-oleoyl lysophosphatidic acid
 Platelet-activating factor|platelet-activating factor
+Monogalactosyldiacylglycerol (MGDG, thylakoid lipid)|monogalactosyldiacylglycerol
+Digalactosyldiacylglycerol (DGDG, thylakoid lipid)|digalactosyldiacylglycerol
 Cardiolipin (tetralinoleoyl)|tetralinoleoyl cardiolipin
 Plasmalogen (PE, plasmenyl)|1-(1Z-octadecenyl)-2-oleoyl-sn-glycero-3-phosphoethanolamine
 Sphingosine

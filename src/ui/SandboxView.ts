@@ -17,6 +17,7 @@ import { MoleculeModel, type MoleculeTemplate, type SandboxAtom, type SandboxBon
 import { layoutFragment, type AtomGeometry, type BondStyle } from '../sandbox/Geometry';
 import { atomFill, textColorFor } from './colors';
 import { toTemplate, type Biomolecule } from '../chemistry/biomolecules/library';
+import { getClipboard, setClipboard } from './clipboard';
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
 const ATOM_R = 18;
@@ -28,9 +29,6 @@ const MIN_ZOOM = 0.1;
 const MAX_ZOOM = 6;
 
 const radiusOf = (symbol: string) => (symbol === 'H' ? H_R : ATOM_R);
-
-/** Clipboard shared by all views (one per window). */
-let clipboard: { template: MoleculeTemplate; pastes: number } | null = null;
 
 const isTyping = (t: EventTarget | null) =>
   t instanceof HTMLElement && (t.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(t.tagName));
@@ -52,6 +50,8 @@ export class SandboxView {
   private geometry = new Map<number, AtomGeometry>();
   private bondStyles = new Map<number, BondStyle>();
   private layoutKeys = new Set<string>();
+  /** False while another layer is shown: keyboard shortcuts then belong to that layer. */
+  active = true;
 
   constructor(
     private readonly svg: SVGSVGElement,
@@ -194,7 +194,7 @@ export class SandboxView {
   copySelection(): boolean {
     const t = this.model.extract(this.selected);
     if (!t) return false;
-    clipboard = { template: t, pastes: 0 };
+    setClipboard(t);
     this.notify(`Copied ${t.symbols.length} atom${t.symbols.length > 1 ? 's' : ''}`);
     return true;
   }
@@ -205,6 +205,7 @@ export class SandboxView {
 
   /** Paste at the pointer when it is over the sandbox, otherwise offset from the original. */
   paste(): void {
+    const clipboard = getClipboard();
     if (!clipboard) {
       this.notify('Clipboard is empty — select atoms and press Ctrl+C');
       return;
@@ -365,6 +366,31 @@ export class SandboxView {
     this.ensureVisible(ids);
     this.render();
     if (m.atomCount > 150) this.notify(`${m.name}: ${m.atomCount} atoms placed`);
+  }
+
+  /**
+   * Inspect from the organelle layer (TSK-UI-007): add the given structures in a row beside whatever
+   * is already in the sandbox (never replacing it), select them and frame them.
+   */
+  placeTemplates(templates: MoleculeTemplate[]): void {
+    if (templates.length === 0) return;
+    const existing = this.model.getAtoms();
+    let x = existing.length ? Math.max(...existing.map((a) => a.x)) + 160 : 0;
+    const y0 = existing.length ? existing.reduce((s, a) => s + a.y, 0) / existing.length : 0;
+    const ids: number[] = [];
+    for (const t of templates) {
+      const xs = t.positions.map((p) => p.x);
+      const ys = t.positions.map((p) => p.y);
+      const minX = Math.min(...xs);
+      const w = Math.max(...xs) - minX;
+      const cy = (Math.min(...ys) + Math.max(...ys)) / 2;
+      ids.push(...this.model.addMolecule({ ...t, positions: t.positions.map((p) => ({ x: p.x - minX + x, y: p.y - cy + y0 })) }));
+      x += w + 140;
+    }
+    this.selected = new Set(ids);
+    this.selectedBond = null;
+    this.render();
+    this.frame(ids.map((id) => this.model.getAtom(id)));
   }
 
   /** Click on a table tile: attach to the selected atom, otherwise place near the centre. */
@@ -593,7 +619,7 @@ export class SandboxView {
   }
 
   private onKey(e: KeyboardEvent): void {
-    if (isTyping(e.target)) return; // search box etc. keep their own shortcuts
+    if (!this.active || isTyping(e.target)) return; // search box etc. keep their own shortcuts
     const mod = e.ctrlKey || e.metaKey;
     const key = e.key.toLowerCase();
     if (mod && key === 'z') {

@@ -188,3 +188,17 @@
 - Tests: 89 passing (new `tests/sandbox/history.test.ts`). Desktop app rebuilt and checked.
 
 - **Merged to `main`** (user-approved fast-forward); TSK-UI-006 → COMPLETE. Gemini: `git pull origin main` before new work.
+
+
+---
+
+### [2026-11-18] Session 012: Layers + organelle layer (TSK-UI-007)
+- **Agent:** Claude. Branch `agent/claude/organelle-layer`.
+- **Layer tabs** (top of the left column): Atomic | Organelle | Cellular 🔒 | Tissue 🔒. Switching to Organelle hides the periodic table, the atomic sandbox and its panels (no atoms shown); Undo/Redo/Clear and keyboard shortcuts act on the visible layer only, each with its own history.
+- **Catalogue (separate search):** 3287 real Gene Ontology cellular-component terms (descendants of organelle GO:0043226, intracellular anatomical structure GO:0005622, protein-containing complex GO:0032991; CC BY 4.0 via EBI QuickGO) in 19 organelle families, with definitions/synonyms — `scripts/build-organelle-catalog.mjs` → `src/organelle/catalog.json`. There are not 3000 distinct organelles in biology: the catalogue is organelles + their sub-compartments, membranes and complexes. 11 are **buildable and simulated**: mitochondrion, chloroplast, ribosome, nucleus, ER, Golgi, lysosome, peroxisome, lipid droplet, α-carboxysome, lipid vesicle.
+- **Building:** one organelle at a time (choosing another replaces it, undoable). Membranes are filled by pasting molecules copied in the Atomic layer (Ctrl+V / Paste ×1 / ×8 / Fill). `src/organelle/classify.ts` decides from the atom graph whether a molecule can form a membrane (≥2 C8+ tails + P/N/sugar head = bilayer lipid; fused 4-ring + OH = sterol; TAG/DAG/sterol ester = neutral lipid), so hand-built lipids count. Real composition rules: inner mitochondrial membrane needs cardiolipin, thylakoids need MGDG/DGDG, lipid droplets are a phospholipid monolayer around a neutral-lipid core. Pasting bilayer lipids with nothing chosen starts a lipid vesicle.
+- **Proteins:** 45 components cite PDB/UniProt entries; `scripts/verify-organelle-structures.mjs` re-checks them (45/45 resolve). Added as referenced parts — not buildable atom by atom in 2D (stated in the app).
+- **Function:** reactions run per tick only when their enzymes, cofactors, closed membranes, light/pH and substrates are present: pyruvate respiration (12.5 ATP/pyruvate) and palmitate β-oxidation (106 ATP), oxygenic photosynthesis (net), translation of a user mRNA with the standard genetic code, transcription of a DNA coding strand (mRNA can be sent to the ribosome), SERCA Ca²⁺ uptake, sphingomyelin synthesis, V-ATPase acidification with pH-gated acid hydrolases, DAAO + catalase, ATGL lipolysis, carboxysome CA + RuBisCO. Every stoichiometric reaction is element-balanced against the PubChem formulas (tested).
+- **Inspect:** clicking a lipid/molecule, or "Inspect atoms", returns its real structure to the Atomic layer (added beside existing content).
+- Library: added MGDG and DGDG (thylakoid galactolipids) and oxalate/citrate/acetate/lactate ions → 1720 molecules.
+- Tests: 108 passing (new `tests/organelle/organelle.test.ts`, 19 tests). Desktop app rebuilt, installed exe checked via CDP.

@@ -18,17 +18,17 @@
   </head>
   <body>
     <header class="topbar">
-      <div class="brand">ATOMICA <span>2D Molecule Sandbox</span></div>
+      <div class="brand">ATOMICA <span id="brand-sub">2D Molecule Sandbox</span></div>
       <div id="element-info" class="element-info">Drag an element into the sandbox</div>
       <div class="actions">
-        <div class="seg" id="mode-seg" role="group" aria-label="Difficulty">
+        <div class="seg atomic-only" id="mode-seg" role="group" aria-label="Difficulty">
           <button type="button" data-mode="easy" title="Double/triple bonds are worked out for you">Easy</button>
           <button type="button" data-mode="hard" title="You set bond orders; wrong ones turn red">Hard</button>
         </div>
-        <label class="toggle" title="Arrange molecules by VSEPR geometry and show bond angles">
+        <label class="toggle atomic-only" title="Arrange molecules by VSEPR geometry and show bond angles">
           <input type="checkbox" id="geo-toggle" /> Geometry grid
         </label>
-        <label class="toggle" id="angles-label" title="Show or hide bond-angle arcs and degree labels (geometry grid)">
+        <label class="toggle atomic-only" id="angles-label" title="Show or hide bond-angle arcs and degree labels (geometry grid)">
           <input type="checkbox" id="angles-toggle" /> Bond angles
         </label>
         <button id="undo-btn" type="button" title="Undo (Ctrl+Z)">Undo</button>
@@ -37,13 +37,21 @@
         <button id="theme-btn" type="button" aria-label="Toggle light/dark mode"></button>
       </div>
     </header>
-    <section id="periodic-table" class="periodic-table" aria-label="Periodic table"></section>
+    <section id="periodic-table" class="periodic-table atomic-only" aria-label="Periodic table"></section>
     <main class="workspace">
-      <aside id="library" class="library" aria-label="Molecule library"></aside>
-      <div class="sandbox-wrap">
+      <div class="leftbar">
+        <nav id="layer-tabs" class="layer-tabs"></nav>
+        <aside id="library" class="library atomic-only" aria-label="Molecule library"></aside>
+        <aside id="organelle-library" class="library organelle-only" aria-label="Organelle library"></aside>
+      </div>
+      <div class="sandbox-wrap atomic-only">
         <svg id="sandbox" class="sandbox" aria-label="Molecule sandbox"></svg>
       </div>
-      <aside class="panel">
+      <div class="sandbox-wrap organelle-only">
+        <svg id="organelle-view" class="sandbox organelle-svg" aria-label="Organelle sandbox"></svg>
+      </div>
+      <aside id="organelle-panel" class="panel organelle-panel organelle-only" aria-label="Organelle"></aside>
+      <aside class="panel atomic-only">
         <h2>Molecules</h2>
         <ul id="fragments"></ul>
         <details class="help" open>
@@ -60,6 +68,7 @@
             <li><b>Move around:</b> drag empty space to pan, scroll to zoom (sandbox only); <b>Fit</b> or <kbd>F</kbd> frames everything.</li>
             <li><b>Select several:</b> <kbd>Shift</kbd>+drag a box, or <kbd>Ctrl</kbd>+click atoms. Drag any selected atom to move them all; <kbd>Delete</kbd> or right-click removes them all.</li>
             <li><kbd>Ctrl</kbd>+<kbd>C</kbd> / <kbd>X</kbd> / <kbd>V</kbd> copy, cut, paste (at the mouse) · <kbd>Ctrl</kbd>+<kbd>A</kbd> select all · <kbd>Ctrl</kbd>+<kbd>Z</kbd> undo · <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Z</kbd> redo.</li>
+            <li><b>Layers</b> (top left): copy a lipid here, switch to <b>Organelle</b> and press <kbd>Ctrl</kbd>+<kbd>V</kbd> to build it into a membrane. <b>Inspect atoms</b> there brings the structures back here.</li>
           </ul>
           <p class="note">Bonding uses common valences as an approximation; it ignores formal charges,
             coordinate bonds and ionic/metallic character. Dashed ring = unfilled valence. Angles are idealised

@@ -86,3 +86,4 @@ docs/obsidian/.obsidian/indexeddb*
 release/
 dist/
 scripts/.biomol-cache/
+scripts/.organelle-cache/
