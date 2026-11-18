@@ -97,6 +97,29 @@ The [`/project-management/`](project-management/) directory is the authoritative
 
 ---
 
+## Persistent Obsidian Knowledge Base (`/docs/obsidian/`)
+
+Per **Section 19**, ATOMICA maintains a canonical, anti-slop **Obsidian Knowledge Base** directly inside the repository under [`/docs/obsidian/`](docs/obsidian/):
+- **Entry Point:** [`00 - Home/Project Dashboard.md`](docs/obsidian/00%20-%20Home/Project%20Dashboard.md)
+- **Knowledge Map:** [`00 - Home/Knowledge Map.md`](docs/obsidian/00%20-%20Home/Knowledge%20Map.md)
+- **Scientific Reference Library:** Peer-reviewed grounding across physics, chemistry, biology, physiology, and immunology.
+- **Architectural Decision Records (ADRs):** Recorded permanently in [`06 - Development/Engineering Decisions/`](docs/obsidian/06%20-%20Development/Engineering%20Decisions/).
+- **Quality Standard:** Strict prohibition of AI slop, empty summaries, duplicate notes, or unverified claims. Every note is connected to technical specifications and test cases via bi-directional links (`[[...]]`).
+
+---
+
+## Engineering Philosophy: Test-First & Functionality-First
+
+Per **Section 20**, ATOMICA follows a strict development philosophy:
+> **RESEARCH → EXPERIMENT → TEST → IMPLEMENT → VERIFY → INTEGRATE → VALIDATE → VISUALIZE → POLISH**
+
+1. **Correctness over Aesthetics:** Scientific, functional, and mathematical accuracy precede graphics, visual effects, and UI polish.
+2. **Software Verification vs. Scientific Validation:** Passing unit tests alone does not constitute scientific validity; models must reproduce established reference cases within empirical tolerances.
+3. **Reference Benchmarks:** Formalized in [`Reference Benchmark Cases and Tolerances`](docs/obsidian/09%20-%20Experiments%20and%20Validation/Scientific%20Validation/Reference%20Benchmark%20Cases%20and%20Tolerances.md) with gold-standard experimental datasets from NIST, IUPAC, CRC Handbook, and RCSB PDB.
+4. **No Fake Science:** Hardcoded approximations or mock animations masquerading as real physics are strictly prohibited.
+
+---
+
 ## Current Status: Phase 0 (Pre-Development Research & Discovery)
 
 Per project mandate (**Section 18**), **no production implementation code may be written until Phase 0 technical discovery is complete, verified, and approved.**

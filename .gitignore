@@ -75,3 +75,9 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
+
+
+# Obsidian configuration caches
+docs/obsidian/.obsidian/workspace*
+docs/obsidian/.obsidian/cache*
+docs/obsidian/.obsidian/indexeddb*
