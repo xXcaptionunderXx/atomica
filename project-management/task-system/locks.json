@@ -12,6 +12,68 @@
       ],
       "claimedAt": "2026-11-18T20:41:57.201692+00:00",
       "releasedAt": "2026-11-18T20:43:13.138842+00:00"
+    },
+    "TSK-ENG-002": {
+      "agent": "claude",
+      "status": "REVIEW",
+      "files": [
+        "src/anatomy/HierarchyTree.ts",
+        "src/anatomy/NavigationState.ts",
+        "tests/anatomy/hierarchy.test.ts"
+      ],
+      "claimedAt": "2026-11-18T20:48:42.619259+00:00",
+      "releasedAt": "2026-11-18T20:50:37.151929+00:00"
+    },
+    "TSK-UI-001": {
+      "agent": "claude",
+      "status": "REVIEW",
+      "files": [
+        "index.html",
+        "vite.config.ts",
+        "src/main.ts",
+        "src/styles.css",
+        "src/ui",
+        "src/sandbox",
+        "src/chemistry/elements.ts",
+        "tests/sandbox",
+        "tests/chemistry/elements.test.ts"
+      ],
+      "claimedAt": "2026-11-18T20:54:56.741846+00:00",
+      "releasedAt": "2026-11-18T21:00:15.655802+00:00"
+    },
+    "TSK-DOC-002": {
+      "agent": "gemini",
+      "status": "COMPLETE",
+      "files": [
+        "docs/obsidian"
+      ],
+      "claimedAt": "2026-11-18T21:00:50.779026+00:00",
+      "releasedAt": "2026-11-18T21:09:49.568361+00:00"
+    },
+    "TSK-UI-002": {
+      "agent": "claude",
+      "status": "REVIEW",
+      "files": [
+        "package.json",
+        "package-lock.json",
+        "vite.config.ts",
+        "electron",
+        ".gitignore"
+      ],
+      "claimedAt": "2026-11-18T21:02:06.633891+00:00",
+      "releasedAt": "2026-11-18T21:04:30.501532+00:00"
+    },
+    "TSK-UI-003": {
+      "agent": "claude",
+      "status": "REVIEW",
+      "files": [
+        "package.json",
+        "CLAUDE.md",
+        "project-management/task-system/COORDINATOR_RULES.md",
+        "scripts/install-desktop-shortcut.ps1"
+      ],
+      "claimedAt": "2026-11-18T21:06:37.580353+00:00",
+      "releasedAt": "2026-11-18T21:08:27.031191+00:00"
     }
   }
 }

@@ -81,3 +81,7 @@ pnpm-debug.log*
 docs/obsidian/.obsidian/workspace*
 docs/obsidian/.obsidian/cache*
 docs/obsidian/.obsidian/indexeddb*
+
+release/
+dist/
+
