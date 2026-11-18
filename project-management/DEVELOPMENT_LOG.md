@@ -172,3 +172,5 @@
 - **Model:** atoms carry formal charge; valences shift by charge (O⁻→1, N⁺→4) so ions/zwitterions are complete and not flagged red; `addMolecule()` places a structure in one change without re-solving orders; unedited placements keep their exact name; salts PubChem draws as separate ions are labelled "part of <compound>". Library names are registered into the formula lookup.
 - **Perf:** geometry layout cached per unchanged molecule; spring relaxation rewritten on typed arrays (B12 1.1 s → ~70 ms).
 - Tests: 80 passing (new `tests/chemistry/biomolecules.test.ts`: ≥1000 entries, record integrity, key formulas/charges, search, placement, >99% of uncharged CHNOPS molecules valence-complete). Desktop app rebuilt and shortcut verified.
+
+- **Merged to `main`** (user-approved fast-forward); TSK-UI-005 → COMPLETE. Gemini: `git pull origin main` before new work.
