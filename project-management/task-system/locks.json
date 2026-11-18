@@ -1,6 +1,43 @@
 {
   "version": "1.0.0",
-  "locks": {},
+  "locks": {
+    "src/organelle": {
+      "agent": "claude",
+      "taskId": "TSK-UI-009",
+      "acquiredAt": "2026-11-18T23:47:00.507902+00:00",
+      "expiresAt": "2026-11-19T11:47:00.507913+00:00"
+    },
+    "src/ui/LibraryPanel.ts": {
+      "agent": "claude",
+      "taskId": "TSK-UI-009",
+      "acquiredAt": "2026-11-18T23:47:00.507902+00:00",
+      "expiresAt": "2026-11-19T11:47:00.507913+00:00"
+    },
+    "src/ui/OrganellePanel.ts": {
+      "agent": "claude",
+      "taskId": "TSK-UI-009",
+      "acquiredAt": "2026-11-18T23:47:00.507902+00:00",
+      "expiresAt": "2026-11-19T11:47:00.507913+00:00"
+    },
+    "src/main.ts": {
+      "agent": "claude",
+      "taskId": "TSK-UI-009",
+      "acquiredAt": "2026-11-18T23:47:00.507902+00:00",
+      "expiresAt": "2026-11-19T11:47:00.507913+00:00"
+    },
+    "src/styles.css": {
+      "agent": "claude",
+      "taskId": "TSK-UI-009",
+      "acquiredAt": "2026-11-18T23:47:00.507902+00:00",
+      "expiresAt": "2026-11-19T11:47:00.507913+00:00"
+    },
+    "tests/organelle": {
+      "agent": "claude",
+      "taskId": "TSK-UI-009",
+      "acquiredAt": "2026-11-18T23:47:00.507902+00:00",
+      "expiresAt": "2026-11-19T11:47:00.507913+00:00"
+    }
+  },
   "tasks": {
     "TSK-ENG-001": {
       "agent": "gemini",
@@ -142,6 +179,19 @@
       ],
       "claimedAt": "2026-11-18T23:28:04.130725+00:00",
       "releasedAt": "2026-11-18T23:32:00.490133+00:00"
+    },
+    "TSK-UI-009": {
+      "agent": "claude",
+      "status": "IN_PROGRESS",
+      "files": [
+        "src/organelle",
+        "src/ui/LibraryPanel.ts",
+        "src/ui/OrganellePanel.ts",
+        "src/main.ts",
+        "src/styles.css",
+        "tests/organelle"
+      ],
+      "claimedAt": "2026-11-18T23:47:00.507902+00:00"
     }
   }
 }
