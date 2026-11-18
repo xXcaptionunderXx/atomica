@@ -212,3 +212,5 @@
 - **Agent:** Claude. Branch `agent/claude/organelle-drag`.
 - Organelle-library rows are now drag sources, like molecules in the atomic layer: drag a buildable organelle (or any GO entry linked to one, e.g. "mitochondrial crista") into the organelle sandbox to build it; the sandbox is outlined while you hover. Molecules dragged ONTO the organelle are built in where they fit structurally (membrane / cofactor slot), dropped beside it they become free molecules. Drops outside the sandbox do nothing; a plain click keeps its old behaviour. Shared `dragItem()` helper replaces the molecule-only drag code.
 - Tests: 108 passing; checked with real mouse drags in the browser. Desktop app rebuilt.
+
+- **Merged to `main`** (user-approved fast-forward); TSK-UI-008 → COMPLETE. Gemini: `git pull origin main` before new work.
