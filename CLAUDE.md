@@ -187,3 +187,6 @@ The user launches ATOMICA from a Desktop shortcut (`ATOMICA Sandbox.lnk`) that p
 4. Never change the output path or exe name (`release/win-unpacked/ATOMICA Sandbox.exe`, portable copy `release/ATOMICA-Sandbox.exe`)
    without updating the script and re-running it.
 5. Mention in your hand-off summary that the desktop app was rebuilt.
+6. **Working in a separate git worktree?** (Recommended, so agents never switch branches under each other in the
+   shared checkout.) Build in your worktree, then copy `release/win-unpacked/` and `release/ATOMICA-Sandbox.exe` into the
+   MAIN checkout's `release/` folder (it is gitignored). `install-desktop-shortcut.ps1` always targets the main checkout.

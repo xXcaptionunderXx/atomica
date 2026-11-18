@@ -53,8 +53,8 @@ describe('MoleculeModel (TSK-UI-001)', () => {
     const { m, ids: [c, o, h] } = build(['C', 'O', 'H']);
     const bond = m.bond(c, o).bond!;
     m.bond(c, h);
-    expect(m.cycleBondOrder(bond.id).order).toBe(2); // O can take 2
-    expect(m.cycleBondOrder(bond.id).order).toBe(1); // O full → wraps to 1
+    expect(m.cycleBondOrder(bond.id).bond!.order).toBe(2); // O can take 2
+    expect(m.cycleBondOrder(bond.id).bond!.order).toBe(1); // O full → wraps to 1
   });
 
   it('noble gases with no chemistry cannot bond; self-bonds are refused', () => {

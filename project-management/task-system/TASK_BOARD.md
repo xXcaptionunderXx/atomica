@@ -10,6 +10,7 @@
 
 | Task ID | Priority | Subsystem | Assigned Agent | Status | Exclusive Reserved Files | Deliverable & Acceptance Criteria |
 | :--- | :---: | :--- | :---: | :---: | :--- | :--- |
+| **TSK-UI-004** | `P0` | Easy/Hard modes, compound names, VSEPR geometry | `agent/claude` | `REVIEW` | `src/sandbox/`, `src/ui/`, `src/chemistry/compoundNames.ts`, `index.html`, `src/main.ts`, `src/styles.css` | Auto bond orders (easy) / red wrong bonds (hard); 500+ compound names; geometry grid with VSEPR angles. |
 | **TSK-UI-002** | `P0` | Windows Desktop App (Electron) | `agent/claude` | `REVIEW` | `electron/`, `package.json`, `vite.config.ts` | Portable .exe wrapping the 2D sandbox (`npm run app:build`). |
 | **TSK-UI-001** | `P0` | 2D Molecule Builder Sandbox | `agent/claude` | `REVIEW` | `index.html`, `src/main.ts`, `src/styles.css`<br>`src/ui/`, `src/sandbox/`, `src/chemistry/elements.ts`<br>`tests/sandbox/`, `tests/chemistry/elements.test.ts` | Periodic table (all 118 elements) at top of screen; drag elements into a 2D sandbox; bond atoms within valence limits; light/dark theme. |
 | **TSK-ENG-001** | `P0` | Real-World Data Ingestion | `agent/gemini` | `READY` | `src/chemistry/PubChemClient.ts`<br>`src/proteins/PdbClient.ts`<br>`tests/chemistry/pubchem.test.ts` | Retrieve real molecules (Creatine, Glucose) and PDB structures (SARS-CoV-2 spike, ACE2). |

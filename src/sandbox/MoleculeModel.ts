@@ -1,12 +1,20 @@
 /**
- * ATOMICA 2D Sandbox Molecule Model — Task TSK-UI-001.
+ * ATOMICA 2D Sandbox Molecule Model — Tasks TSK-UI-001, TSK-UI-004.
  * Pure data model (no DOM): atoms with 2D positions, bonds with order 1–3, valence-limited
- * bonding, connected-fragment detection, Hill-notation formulas and molecular weights.
+ * bonding, connected-fragment detection, Hill-notation formulas, molecular weights and names.
+ *
+ * Modes:
+ *  - 'easy': the user only draws connectivity; bond orders are assigned automatically by
+ *    BondOrderSolver after every structural change.
+ *  - 'hard': the user sets bond orders; `bondOrderIssues()` reports bonds whose order differs
+ *    from the best valence-satisfying assignment (shown red in the UI).
  *
  * Bonding rule is the labelled valence APPROXIMATION documented in chemistry/elements.ts.
  */
 
 import { getElement, maxValence } from '../chemistry/elements';
+import { lookupCompound, type CompoundMatch } from '../chemistry/compoundNames';
+import { solveBondOrders } from './BondOrderSolver';
 
 export interface SandboxAtom {
   id: number;
@@ -23,11 +31,15 @@ export interface SandboxBond {
 }
 
 export type ValenceStatus = 'complete' | 'open' | 'inert';
+export type BuildMode = 'easy' | 'hard';
 
 export interface Fragment {
   atomIds: number[];
   formula: string;
   molecularWeight: number;
+  /** Charge implied by unfilled valences on electronegative atoms (e.g. sulfate −2). */
+  impliedCharge: number;
+  match: CompoundMatch | null;
 }
 
 export interface BondResult {
@@ -38,14 +50,29 @@ export interface BondResult {
 
 export const MAX_BOND_ORDER = 3;
 
+/** Atoms whose unfilled valence is read as a negative charge when naming ions. */
+const ANION_FORMERS = new Set(['N', 'O', 'S', 'Se', 'F', 'Cl', 'Br', 'I', 'P']);
+
 export class MoleculeModel {
   private atoms = new Map<number, SandboxAtom>();
   private bonds = new Map<number, SandboxBond>();
   private nextAtomId = 1;
   private nextBondId = 1;
   private listeners = new Set<() => void>();
+  private _mode: BuildMode = 'hard';
+  /** Incremented on every structural change (atoms/bonds/orders), not on moves. */
+  private _version = 0;
+  private issuesCache: { version: number; ids: Set<number> } | null = null;
 
   // ---------- queries ----------
+  get mode(): BuildMode {
+    return this._mode;
+  }
+
+  get version(): number {
+    return this._version;
+  }
+
   getAtoms(): SandboxAtom[] {
     return [...this.atoms.values()];
   }
@@ -92,12 +119,26 @@ export class MoleculeModel {
     return valences.includes(this.usedValence(atomId)) ? 'complete' : 'open';
   }
 
+  /** Units of valence still open before the atom reaches its next allowed valence. */
+  openValence(atomId: number): number {
+    const used = this.usedValence(atomId);
+    const next = getElement(this.getAtom(atomId).symbol).valences.filter((v) => v >= used);
+    return next.length ? Math.min(...next) - used : 0;
+  }
+
   // ---------- mutations ----------
+  setMode(mode: BuildMode): void {
+    if (mode === this._mode) return;
+    this._mode = mode;
+    if (mode === 'easy') this.autoAssignOrders();
+    this.changed();
+  }
+
   addAtom(symbol: string, x: number, y: number): SandboxAtom {
     getElement(symbol); // validates symbol
     const atom: SandboxAtom = { id: this.nextAtomId++, symbol, x, y };
     this.atoms.set(atom.id, atom);
-    this.emit();
+    this.changed();
     return atom;
   }
 
@@ -108,63 +149,85 @@ export class MoleculeModel {
     this.emit();
   }
 
-  /** Why two atoms cannot gain one more bond order, or null if they can. */
+  /** Move many atoms at once with a single change notification. */
+  setPositions(positions: Map<number, { x: number; y: number }>): void {
+    for (const [id, p] of positions) {
+      const a = this.atoms.get(id);
+      if (a) {
+        a.x = p.x;
+        a.y = p.y;
+      }
+    }
+    this.emit();
+  }
+
+  /** Why two atoms cannot be (further) bonded, or null if they can. */
   bondBlocker(a: number, b: number): string | null {
     if (a === b) return 'An atom cannot bond to itself';
     const atomA = this.getAtom(a);
     const atomB = this.getAtom(b);
     const existing = this.findBond(a, b);
+    if (existing && this._mode === 'easy') {
+      return 'Already bonded — in Easy mode double/triple bonds are chosen automatically';
+    }
     if (existing && existing.order >= MAX_BOND_ORDER) return 'Bond is already triple (maximum order)';
     for (const atom of [atomA, atomB]) {
       if (maxValence(atom.symbol) === 0) return `${getElement(atom.symbol).name} has no established bonding chemistry`;
-      if (this.freeValence(atom.id) < 1) return `${atom.symbol} has no free valence left`;
+      // Easy mode only needs room for one more single bond; orders are re-solved afterwards.
+      const used = this._mode === 'easy' ? this.bondsOf(atom.id).length : this.usedValence(atom.id);
+      if (maxValence(atom.symbol) - used < 1) return `${atom.symbol} has no free valence left`;
     }
     return null;
   }
 
-  /** Create a single bond, or raise an existing bond's order by one. */
+  /** Create a single bond, or (hard mode) raise an existing bond's order by one. */
   bond(a: number, b: number): BondResult {
     const blocker = this.bondBlocker(a, b);
     if (blocker) return { ok: false, reason: blocker };
-    const existing = this.findBond(a, b);
-    if (existing) {
-      existing.order = (existing.order + 1) as 1 | 2 | 3;
-      this.emit();
-      return { ok: true, bond: existing };
+    let bond = this.findBond(a, b);
+    if (bond) {
+      bond.order = (bond.order + 1) as 1 | 2 | 3;
+    } else {
+      bond = { id: this.nextBondId++, a, b, order: 1 };
+      this.bonds.set(bond.id, bond);
     }
-    const bond: SandboxBond = { id: this.nextBondId++, a, b, order: 1 };
-    this.bonds.set(bond.id, bond);
-    this.emit();
+    if (this._mode === 'easy') this.autoAssignOrders();
+    this.changed();
     return { ok: true, bond };
   }
 
-  /** Cycle a bond 1 → 2 → 3 → 1, skipping orders that would exceed either atom's valence. */
-  cycleBondOrder(bondId: number): SandboxBond {
+  /** Hard mode: cycle 1 → 2 → 3 → 1, skipping orders that would exceed either atom's valence. */
+  cycleBondOrder(bondId: number): BondResult {
     const bond = this.getBond(bondId);
+    if (this._mode === 'easy') {
+      return { ok: false, bond, reason: 'Bond orders are automatic in Easy mode — switch to Hard mode to set them' };
+    }
     if (bond.order < MAX_BOND_ORDER && this.freeValence(bond.a) >= 1 && this.freeValence(bond.b) >= 1) {
       bond.order = (bond.order + 1) as 1 | 2 | 3;
     } else {
       bond.order = 1;
     }
-    this.emit();
-    return bond;
+    this.changed();
+    return { ok: true, bond };
   }
 
   removeBond(id: number): void {
     this.bonds.delete(id);
-    this.emit();
+    if (this._mode === 'easy') this.autoAssignOrders();
+    this.changed();
   }
 
   removeAtom(id: number): void {
     for (const b of this.bondsOf(id)) this.bonds.delete(b.id);
     this.atoms.delete(id);
-    this.emit();
+    if (this._mode === 'easy') this.autoAssignOrders();
+    this.changed();
   }
 
   clear(): void {
     this.atoms.clear();
     this.bonds.clear();
-    this.emit();
+    this.changed();
   }
 
   subscribe(fn: () => void): () => void {
@@ -172,13 +235,46 @@ export class MoleculeModel {
     return () => this.listeners.delete(fn);
   }
 
+  private changed(): void {
+    this._version++;
+    this.emit();
+  }
+
   private emit(): void {
     for (const fn of this.listeners) fn();
   }
 
+  // ---------- bond-order solving ----------
+  private solveFragment(atomIds: number[]) {
+    const ids = new Set(atomIds);
+    const atoms = atomIds.map((id) => ({ id, valences: getElement(this.getAtom(id).symbol).valences }));
+    const bonds = this.getBonds().filter((b) => ids.has(b.a));
+    return { bonds, solution: solveBondOrders(atoms, bonds) };
+  }
+
+  /** Easy mode: set every bond order to the best valence-satisfying assignment. */
+  autoAssignOrders(): void {
+    for (const frag of this.components()) {
+      const { solution } = this.solveFragment(frag);
+      for (const [id, order] of solution.orders) this.getBond(id).order = order as 1 | 2 | 3;
+    }
+  }
+
+  /** Hard mode: ids of bonds whose order should change to satisfy more valences. */
+  bondOrderIssues(): Set<number> {
+    if (this.issuesCache?.version === this._version) return this.issuesCache.ids;
+    const ids = new Set<number>();
+    for (const frag of this.components()) {
+      const { bonds, solution } = this.solveFragment(frag);
+      if (!solution.exhaustive) continue; // never flag on an incomplete search
+      for (const b of bonds) if (solution.orders.get(b.id) !== b.order) ids.add(b.id);
+    }
+    this.issuesCache = { version: this._version, ids };
+    return ids;
+  }
+
   // ---------- chemistry summaries ----------
-  /** Connected components, each with its Hill formula and molecular weight. */
-  fragments(): Fragment[] {
+  private components(): number[][] {
     const seen = new Set<number>();
     const adj = new Map<number, number[]>();
     for (const id of this.atoms.keys()) adj.set(id, []);
@@ -186,7 +282,7 @@ export class MoleculeModel {
       adj.get(b.a)!.push(b.b);
       adj.get(b.b)!.push(b.a);
     }
-    const out: Fragment[] = [];
+    const out: number[][] = [];
     for (const start of [...this.atoms.keys()].sort((x, y) => x - y)) {
       if (seen.has(start)) continue;
       const ids: number[] = [];
@@ -202,10 +298,26 @@ export class MoleculeModel {
           }
         }
       }
-      const symbols = ids.map((i) => this.getAtom(i).symbol);
-      out.push({ atomIds: ids.sort((x, y) => x - y), formula: hillFormula(symbols), molecularWeight: molecularWeight(symbols) });
+      out.push(ids.sort((x, y) => x - y));
     }
     return out;
+  }
+
+  /** Connected components with formula, weight, implied ionic charge and library name. */
+  fragments(): Fragment[] {
+    return this.components().map((ids) => {
+      const symbols = ids.map((i) => this.getAtom(i).symbol);
+      const impliedCharge = -ids
+        .filter((i) => ANION_FORMERS.has(this.getAtom(i).symbol) && this.bondsOf(i).length > 0)
+        .reduce((s, i) => s + this.openValence(i), 0);
+      return {
+        atomIds: ids,
+        formula: hillFormula(symbols),
+        molecularWeight: molecularWeight(symbols),
+        impliedCharge,
+        match: ids.length > 1 ? lookupCompound(hillFormula(symbols), impliedCharge) : null,
+      };
+    });
   }
 }
 
@@ -213,6 +325,10 @@ export class MoleculeModel {
 export function hillFormula(symbols: string[]): string {
   const counts = new Map<string, number>();
   for (const s of symbols) counts.set(s, (counts.get(s) ?? 0) + 1);
+  return hillFromCounts(counts);
+}
+
+export function hillFromCounts(counts: Map<string, number>): string {
   const keys = [...counts.keys()];
   let order: string[];
   if (counts.has('C')) {

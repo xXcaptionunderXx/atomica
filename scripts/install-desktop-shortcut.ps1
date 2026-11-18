@@ -3,7 +3,11 @@
 # updates what it launches. Safe to run repeatedly.
 $ErrorActionPreference = 'Stop'
 
-$repo   = Split-Path -Parent $PSScriptRoot
+# Always target the MAIN checkout (first entry of `git worktree list`), even when this script is
+# run from an agent's separate worktree, so the shortcut never moves.
+$repo = Split-Path -Parent $PSScriptRoot
+$main = (git -C $repo worktree list --porcelain | Select-String '^worktree ' | Select-Object -First 1)
+if ($main) { $repo = ($main.Line -replace '^worktree ', '') -replace '/', '\' }
 $target = Join-Path $repo 'release\win-unpacked\ATOMICA Sandbox.exe'
 if (-not (Test-Path $target)) {
     throw "App not built yet: $target missing. Run 'npm run app:build' first."

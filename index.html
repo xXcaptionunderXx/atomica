@@ -21,6 +21,13 @@
       <div class="brand">ATOMICA <span>2D Molecule Sandbox</span></div>
       <div id="element-info" class="element-info">Drag an element into the sandbox</div>
       <div class="actions">
+        <div class="seg" id="mode-seg" role="group" aria-label="Difficulty">
+          <button type="button" data-mode="easy" title="Double/triple bonds are worked out for you">Easy</button>
+          <button type="button" data-mode="hard" title="You set bond orders; wrong ones turn red">Hard</button>
+        </div>
+        <label class="toggle" title="Arrange molecules by VSEPR geometry and show bond angles">
+          <input type="checkbox" id="geo-toggle" /> Geometry grid
+        </label>
         <button id="clear-btn" type="button">Clear</button>
         <button id="theme-btn" type="button" aria-label="Toggle light/dark mode"></button>
       </div>
@@ -36,13 +43,16 @@
           <ul>
             <li>Drag an element from the table into the sandbox.</li>
             <li>Drop it <b>on an atom</b> to bond it there.</li>
-            <li>Click an atom, then another atom, to bond them. Repeat for double/triple.</li>
+            <li>Click an atom, then another atom, to bond them.</li>
             <li>With an atom selected, click an element in the table to attach it.</li>
-            <li>Click a bond to cycle single → double → triple.</li>
-            <li>Drag atoms to move them. Right-click or <kbd>Delete</kbd> removes.</li>
+            <li><b>Easy:</b> double/triple bonds are chosen for you. <b>Hard:</b> click a bond (or bond the same pair again) to cycle single → double → triple; <span class="red-text">red</span> bonds have the wrong order.</li>
+            <li><b>Geometry grid:</b> molecules snap to their real VSEPR shape with bond angles, wedges (toward you), dashes (away) and lone-pair dots. Drag moves the whole molecule.</li>
+            <li>Right-click or <kbd>Delete</kbd> removes.</li>
           </ul>
           <p class="note">Bonding uses common valences as an approximation; it ignores formal charges,
-            coordinate bonds and ionic/metallic character. Dashed ring = unfilled valence.</p>
+            coordinate bonds and ionic/metallic character. Dashed ring = unfilled valence. Angles are idealised
+            VSEPR values (real molecules differ slightly, e.g. H₂S is 92°). Names are matched by formula, so isomers
+            are listed as alternatives.</p>
         </details>
       </aside>
       <div id="toast" class="toast" role="status"></div>

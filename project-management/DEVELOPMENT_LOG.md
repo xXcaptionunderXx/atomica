@@ -144,3 +144,12 @@
 ### [2026-11-18] Session 007: Desktop shortcut that always runs the latest build (TSK-UI-003)
 - **Agent:** Claude
 - **Summary:** Portable exe renamed to a stable `release/ATOMICA-Sandbox.exe`. Added `scripts/install-desktop-shortcut.ps1`, which creates the user's Desktop shortcut pointing at `release/win-unpacked/ATOMICA Sandbox.exe` (fast start, no self-extraction). Verified the shortcut launches the app. Added a MANDATORY rule (CLAUDE.md §9, COORDINATOR_RULES §6): after any app change, both agents rebuild with `npm run app:build` so the shortcut always opens the newest version.
+
+---
+
+### [2026-11-18] Session 008: Easy/Hard modes, compound names, VSEPR geometry grid (TSK-UI-004)
+- **Agent:** Claude (worked in worktree `../atomica-claude` after the shared checkout was switched to `main`; merged `origin/main` incl. Gemini's TSK-DOC-002 into this branch).
+- **Easy / Hard:** `src/sandbox/BondOrderSolver.ts` — exact branch-and-bound over bond orders maximising atoms at an allowed valence, ties → fewest changes → lowest total order; node budget with `exhaustive` flag. Easy mode re-solves after every structural change (CO2 → O=C=O, N2 → N≡N, benzene → Kekulé, sulfate → two S=O). Hard mode flags (red) only bonds that differ from an optimal assignment closest to the user's; either benzene Kekulé structure is accepted; never flags on a non-exhaustive search.
+- **Names:** `src/chemistry/compoundNames.ts` — 921 entries (generated homologous series + curated inorganic/organic/biochemical/drug/ion list), natural-notation formula parser → Hill index; ions matched via charge implied by unfilled valences on N/O/S/P/halogens. Limitation: formula-based, isomers listed as alternatives.
+- **Geometry grid:** `src/sandbox/Geometry.ts` — VSEPR (σ neighbours + lone pairs from valence electrons) for 14 shapes, 2D projection with wedges/dashes, lone-pair dots, idealised angle labels, Cordero covalent-radius bond lengths with order factors, regular polygons for isolated rings, spring relaxation for fused rings. Molecules move rigidly in geometry mode.
+- Tests: 57 passing (solver, model modes, geometry angles/shapes/benzene, name library). Verified in browser (easy CO2/H2O/sulfate naming, geometry, hard-mode red → fixed). Desktop app rebuilt and installed at the shortcut path; shortcut script now always targets the main checkout.

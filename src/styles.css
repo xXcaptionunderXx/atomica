@@ -183,3 +183,30 @@ kbd { border: 1px solid var(--border); border-radius: 3px; padding: 0 4px; font-
 .atom .select-ring { fill: none; stroke: var(--accent); stroke-width: 3; }
 .atom .badge { fill: var(--open-ring); }
 .atom .badge-text { font-size: 10px; fill: #000; }
+
+/* ---------- TSK-UI-004: modes, geometry grid, names ---------- */
+:root, :root[data-theme='light'] { --wrong: #dc2626; --grid: #e6e8ec; --lp: #6b7280; }
+:root[data-theme='dark'] { --wrong: #f87171; --grid: #2a2b30; --lp: #9aa0a8; }
+
+.seg { display: inline-flex; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+.seg button { border: 0; border-radius: 0; background: var(--bg); }
+.seg button + button { border-left: 1px solid var(--border); }
+.seg button.active { background: var(--accent); color: #fff; }
+.toggle { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; white-space: nowrap; }
+.toggle input { accent-color: var(--accent); }
+
+.grid-line { fill: none; stroke: var(--grid); stroke-width: 1; }
+.bond-group.wrong .bond-line, .bond-group.wrong .bond-dash { stroke: var(--wrong); stroke-width: 3; }
+.bond-group.wrong .bond-wedge { fill: var(--wrong); }
+.bond-wedge { fill: var(--bond); }
+.bond-dash { stroke: var(--bond); stroke-width: 1.6; }
+.bond-group:hover .bond-wedge, .bond-group.selected .bond-wedge { fill: var(--accent); }
+.bond-group:hover .bond-dash, .bond-group.selected .bond-dash { stroke: var(--accent); }
+.lone-pair { fill: var(--lp); }
+.angle-arc { fill: none; stroke: var(--accent); stroke-width: 1.2; }
+.angle-label { fill: var(--accent); font-size: 11px; font-weight: 600; text-anchor: middle; dominant-baseline: central; pointer-events: none; }
+
+#fragments .name { font-weight: 650; font-size: 14px; }
+#fragments .formula { font-size: 13px; color: var(--muted); }
+#fragments .isomers { font-style: italic; }
+.red-text { color: var(--wrong); }
