@@ -174,3 +174,15 @@
 - Tests: 80 passing (new `tests/chemistry/biomolecules.test.ts`: ≥1000 entries, record integrity, key formulas/charges, search, placement, >99% of uncharged CHNOPS molecules valence-complete). Desktop app rebuilt and shortcut verified.
 
 - **Merged to `main`** (user-approved fast-forward); TSK-UI-005 → COMPLETE. Gemini: `git pull origin main` before new work.
+
+
+---
+
+### [2026-11-18] Session 011: Sandbox navigation, undo/redo, multi-select (TSK-UI-006)
+- **Agent:** Claude. Branch `agent/claude/sandbox-navigation`.
+- **Bug fixed:** molecules could draw outside the sandbox (geometry-grid layout uses real bond lengths, so large library molecules grew past the edges). The sandbox now clips its content (`.sandbox-wrap`), and a newly placed molecule that does not fit zooms the view out to frame it.
+- **Navigation:** atoms live in world coordinates under a pan/zoom transform. Left-drag on empty space pans; the wheel zooms at the cursor and only inside the sandbox (library, panels and page never scroll-zoom). Corner controls: − / % (reset to 100%) / + / Fit (also `F`).
+- **Undo/redo:** `MoleculeModel` keeps JSON snapshots (200 steps). Every structural edit is a step; drags commit on release; placing a molecule, group delete, paste and Clear are single steps; Easy/Hard switches and automatic geometry re-layout are not steps. Ctrl+Z, Ctrl+Shift+Z / Ctrl+Y, plus Undo/Redo buttons.
+- **Selection:** Shift-drag box adds atoms to the selection, Ctrl/Shift-click toggles atoms, Ctrl+A selects all. A selection drags together; Delete / right-click removes all of it; Ctrl+C / X / V copy, cut and paste at the mouse (bonds, charges and library names kept; partial copies lose the exact name).
+- **Bond angles toggle:** shows/hides angle arcs and degree labels (active with the geometry grid; saved).
+- Tests: 89 passing (new `tests/sandbox/history.test.ts`). Desktop app rebuilt and checked.

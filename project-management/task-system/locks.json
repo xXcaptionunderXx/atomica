@@ -1,49 +1,6 @@
 {
   "version": "1.0.0",
-  "locks": {
-    "src/ui/SandboxView.ts": {
-      "agent": "claude",
-      "taskId": "TSK-UI-006",
-      "acquiredAt": "2026-11-18T22:38:23.044777+00:00",
-      "expiresAt": "2026-11-19T10:38:23.044788+00:00"
-    },
-    "src/sandbox/MoleculeModel.ts": {
-      "agent": "claude",
-      "taskId": "TSK-UI-006",
-      "acquiredAt": "2026-11-18T22:38:23.044777+00:00",
-      "expiresAt": "2026-11-19T10:38:23.044788+00:00"
-    },
-    "src/sandbox/History.ts": {
-      "agent": "claude",
-      "taskId": "TSK-UI-006",
-      "acquiredAt": "2026-11-18T22:38:23.044777+00:00",
-      "expiresAt": "2026-11-19T10:38:23.044788+00:00"
-    },
-    "src/main.ts": {
-      "agent": "claude",
-      "taskId": "TSK-UI-006",
-      "acquiredAt": "2026-11-18T22:38:23.044777+00:00",
-      "expiresAt": "2026-11-19T10:38:23.044788+00:00"
-    },
-    "index.html": {
-      "agent": "claude",
-      "taskId": "TSK-UI-006",
-      "acquiredAt": "2026-11-18T22:38:23.044777+00:00",
-      "expiresAt": "2026-11-19T10:38:23.044788+00:00"
-    },
-    "src/styles.css": {
-      "agent": "claude",
-      "taskId": "TSK-UI-006",
-      "acquiredAt": "2026-11-18T22:38:23.044777+00:00",
-      "expiresAt": "2026-11-19T10:38:23.044788+00:00"
-    },
-    "tests/sandbox": {
-      "agent": "claude",
-      "taskId": "TSK-UI-006",
-      "acquiredAt": "2026-11-18T22:38:23.044777+00:00",
-      "expiresAt": "2026-11-19T10:38:23.044788+00:00"
-    }
-  },
+  "locks": {},
   "tasks": {
     "TSK-ENG-001": {
       "agent": "gemini",
@@ -139,7 +96,7 @@
     },
     "TSK-UI-006": {
       "agent": "claude",
-      "status": "IN_PROGRESS",
+      "status": "REVIEW",
       "files": [
         "src/ui/SandboxView.ts",
         "src/sandbox/MoleculeModel.ts",
@@ -149,7 +106,8 @@
         "src/styles.css",
         "tests/sandbox"
       ],
-      "claimedAt": "2026-11-18T22:38:23.044777+00:00"
+      "claimedAt": "2026-11-18T22:38:23.044777+00:00",
+      "releasedAt": "2026-11-18T22:45:45.980702+00:00"
     }
   }
 }

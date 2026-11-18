@@ -5,10 +5,15 @@
  * Geometry mode: each molecule is laid out with VSEPR geometry (sandbox/Geometry.ts),
  * a background grid is shown, and bond angles, wedges/dashes and lone pairs are drawn.
  * Dragging any atom then moves the whole molecule rigidly.
+ *
+ * Navigation & editing (TSK-UI-006): atoms live in world coordinates; the view keeps a pan/zoom
+ * transform (left-drag on empty space pans, wheel zooms at the cursor, only inside the sandbox).
+ * Multi-selection via Shift-drag box or Ctrl-click; selections move, copy/cut/paste and delete
+ * together; Ctrl+Z / Ctrl+Shift+Z undo and redo through MoleculeModel's history.
  */
 
 import { getElement } from '../chemistry/elements';
-import { MoleculeModel, type SandboxAtom, type SandboxBond } from '../sandbox/MoleculeModel';
+import { MoleculeModel, type MoleculeTemplate, type SandboxAtom, type SandboxBond } from '../sandbox/MoleculeModel';
 import { layoutFragment, type AtomGeometry, type BondStyle } from '../sandbox/Geometry';
 import { atomFill, textColorFor } from './colors';
 import { toTemplate, type Biomolecule } from '../chemistry/biomolecules/library';
@@ -19,12 +24,29 @@ const H_R = 13;
 const BOND_LENGTH = 64;
 const DRAG_THRESHOLD_PX = 4;
 
-type Selection = { kind: 'atom'; id: number } | { kind: 'bond'; id: number } | null;
+const MIN_ZOOM = 0.1;
+const MAX_ZOOM = 6;
 
 const radiusOf = (symbol: string) => (symbol === 'H' ? H_R : ATOM_R);
 
+/** Clipboard shared by all views (one per window). */
+let clipboard: { template: MoleculeTemplate; pastes: number } | null = null;
+
+const isTyping = (t: EventTarget | null) =>
+  t instanceof HTMLElement && (t.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(t.tagName));
+
 export class SandboxView {
-  private selection: Selection = null;
+  /** Selected atoms (multi-select) and/or a single selected bond. */
+  private selected = new Set<number>();
+  private selectedBond: number | null = null;
+  /** World → screen: screen = world * k + (tx, ty). */
+  private view = { tx: 0, ty: 0, k: 1 };
+  private root: SVGGElement | null = null;
+  private gridPattern: SVGElement | null = null;
+  private marquee: SVGElement | null = null;
+  private pointer: { x: number; y: number } | null = null; // last pointer, world coords
+  private zoomLabel: HTMLButtonElement | null = null;
+  private anglesOn = true;
   private geometryOn = false;
   private layoutVersion = -1;
   private geometry = new Map<number, AtomGeometry>();
@@ -39,12 +61,191 @@ export class SandboxView {
     model.subscribe(() => this.onModelChange());
     svg.addEventListener('pointerdown', (e) => this.onPointerDown(e));
     svg.addEventListener('contextmenu', (e) => this.onContextMenu(e));
+    svg.addEventListener('wheel', (e) => this.onWheel(e), { passive: false });
+    svg.addEventListener('pointermove', (e) => (this.pointer = this.toLocal(e.clientX, e.clientY)));
+    svg.addEventListener('pointerleave', () => (this.pointer = null));
     window.addEventListener('keydown', (e) => this.onKey(e));
+    this.buildViewControls();
     this.render();
   }
 
+  /** The one selected atom (for click-to-bond / attach), or null when 0 or several are selected. */
   get selectedAtomId(): number | null {
-    return this.selection?.kind === 'atom' ? this.selection.id : null;
+    return this.selected.size === 1 ? [...this.selected][0] : null;
+  }
+
+  get selectedAtomIds(): number[] {
+    return [...this.selected];
+  }
+
+  // ---------- view transform (pan / zoom) ----------
+  private buildViewControls(): void {
+    const host = this.svg.parentElement;
+    if (!host) return;
+    const bar = document.createElement('div');
+    bar.className = 'view-controls';
+    const btn = (label: string, title: string, fn: () => void) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.textContent = label;
+      b.title = title;
+      b.addEventListener('click', fn);
+      bar.append(b);
+      return b;
+    };
+    btn('\u2212', 'Zoom out', () => this.zoomAtCenter(1 / 1.25));
+    this.zoomLabel = btn('100%', 'Reset zoom to 100%', () => this.setZoom(1));
+    btn('+', 'Zoom in', () => this.zoomAtCenter(1.25));
+    btn('Fit', 'Fit all molecules in view (F)', () => this.fitView());
+    host.append(bar);
+  }
+
+  private applyView(): void {
+    const { tx, ty, k } = this.view;
+    const t = `translate(${tx},${ty}) scale(${k})`;
+    this.root?.setAttribute('transform', t);
+    this.gridPattern?.setAttribute('patternTransform', t);
+    if (this.zoomLabel) this.zoomLabel.textContent = `${Math.round(k * 100)}%`;
+  }
+
+  /** Zoom by `factor` keeping the screen point (sx, sy) (relative to the sandbox) fixed. */
+  private zoomAround(sx: number, sy: number, factor: number): void {
+    const k = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, this.view.k * factor));
+    const wx = (sx - this.view.tx) / this.view.k;
+    const wy = (sy - this.view.ty) / this.view.k;
+    this.view = { k, tx: sx - wx * k, ty: sy - wy * k };
+    this.applyView();
+  }
+
+  private zoomAtCenter(factor: number): void {
+    const r = this.svg.getBoundingClientRect();
+    this.zoomAround(r.width / 2, r.height / 2, factor);
+  }
+
+  setZoom(k: number): void {
+    this.zoomAtCenter(k / this.view.k);
+  }
+
+  get zoom(): number {
+    return this.view.k;
+  }
+
+  /** Frame every atom (or reset when empty). */
+  fitView(): void {
+    this.frame(this.model.getAtoms());
+  }
+
+  /**
+   * Make sure the given atoms are on screen: if any are outside the view, zoom out (never in)
+   * and centre on them. Used after placing a library molecule, whose geometry-grid layout can be
+   * far larger than the space it was dropped into.
+   */
+  private ensureVisible(ids: number[]): void {
+    const r = this.svg.getBoundingClientRect();
+    if (r.width === 0 || ids.length === 0) return;
+    const atoms = ids.filter((id) => this.model.hasAtom(id)).map((id) => this.model.getAtom(id));
+    const { tx, ty, k } = this.view;
+    const pad = 24;
+    const inView = atoms.every((a) => {
+      const sx = a.x * k + tx;
+      const sy = a.y * k + ty;
+      return sx >= pad && sx <= r.width - pad && sy >= pad && sy <= r.height - pad;
+    });
+    if (!inView) this.frame(atoms, k);
+  }
+
+  private frame(atoms: SandboxAtom[], maxZoom = 1.5): void {
+    const r = this.svg.getBoundingClientRect();
+    if (atoms.length === 0 || r.width === 0) {
+      this.view = { tx: 0, ty: 0, k: 1 };
+      this.applyView();
+      return;
+    }
+    const pad = 40;
+    const xs = atoms.map((a) => a.x);
+    const ys = atoms.map((a) => a.y);
+    const minX = Math.min(...xs) - pad;
+    const maxX = Math.max(...xs) + pad;
+    const minY = Math.min(...ys) - pad;
+    const maxY = Math.max(...ys) + pad;
+    const k = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, Math.min(maxZoom, r.width / (maxX - minX), r.height / (maxY - minY))));
+    this.view = { k, tx: r.width / 2 - ((minX + maxX) / 2) * k, ty: r.height / 2 - ((minY + maxY) / 2) * k };
+    this.applyView();
+  }
+
+  private onWheel(e: WheelEvent): void {
+    e.preventDefault(); // zoom the sandbox only; never scroll the page or side panels
+    const r = this.svg.getBoundingClientRect();
+    const delta = e.deltaMode === 1 ? e.deltaY * 16 : e.deltaY;
+    this.zoomAround(e.clientX - r.left, e.clientY - r.top, Math.exp(-delta * 0.0015));
+  }
+
+  // ---------- undo / redo / clipboard ----------
+  undo(): void {
+    if (!this.model.undo()) this.notify('Nothing to undo');
+    this.clearSelection();
+  }
+
+  redo(): void {
+    if (!this.model.redo()) this.notify('Nothing to redo');
+    this.clearSelection();
+  }
+
+  copySelection(): boolean {
+    const t = this.model.extract(this.selected);
+    if (!t) return false;
+    clipboard = { template: t, pastes: 0 };
+    this.notify(`Copied ${t.symbols.length} atom${t.symbols.length > 1 ? 's' : ''}`);
+    return true;
+  }
+
+  cutSelection(): void {
+    if (this.copySelection()) this.deleteSelection();
+  }
+
+  /** Paste at the pointer when it is over the sandbox, otherwise offset from the original. */
+  paste(): void {
+    if (!clipboard) {
+      this.notify('Clipboard is empty — select atoms and press Ctrl+C');
+      return;
+    }
+    const t = clipboard.template;
+    const cx = t.positions.reduce((s, p) => s + p.x, 0) / t.positions.length;
+    const cy = t.positions.reduce((s, p) => s + p.y, 0) / t.positions.length;
+    clipboard.pastes++;
+    const off = 40 * clipboard.pastes;
+    const target = this.pointer ?? { x: cx + off, y: cy + off };
+    const ids = this.model.addMolecule({
+      ...t,
+      positions: t.positions.map((p) => ({ x: p.x - cx + target.x, y: p.y - cy + target.y })),
+    });
+    this.selected = new Set(ids);
+    this.selectedBond = null;
+    this.render();
+  }
+
+  deleteSelection(): void {
+    if (this.selected.size) this.model.removeAtoms(this.selected);
+    else if (this.selectedBond !== null) this.model.removeBond(this.selectedBond);
+    this.clearSelection();
+  }
+
+  selectAll(): void {
+    this.selected = new Set(this.model.getAtoms().map((a) => a.id));
+    this.selectedBond = null;
+    this.render();
+  }
+
+  clearSelection(): void {
+    this.selected.clear();
+    this.selectedBond = null;
+    this.render();
+  }
+
+  /** Show or hide the bond-angle arcs and degree labels drawn in geometry mode. */
+  setAngles(on: boolean): void {
+    this.anglesOn = on;
+    this.render();
   }
 
   get geometryEnabled(): boolean {
@@ -102,18 +303,24 @@ export class SandboxView {
       for (const [id, s] of res.bondStyles) this.bondStyles.set(id, s);
     }
     this.model.setPositions(positions); // emits → render (version unchanged)
+    this.model.refreshBaseline(); // automatic layout is not an undo step
   }
 
-  /** Screen point → sandbox coordinates, or null if outside the sandbox. */
+  /** Screen point → world (sandbox) coordinates, or null if outside the sandbox. */
   toLocal(clientX: number, clientY: number): { x: number; y: number } | null {
     const r = this.svg.getBoundingClientRect();
     if (clientX < r.left || clientX > r.right || clientY < r.top || clientY > r.bottom) return null;
-    return { x: clientX - r.left, y: clientY - r.top };
+    return this.screenToWorld(clientX - r.left, clientY - r.top);
   }
 
+  private screenToWorld(sx: number, sy: number): { x: number; y: number } {
+    return { x: (sx - this.view.tx) / this.view.k, y: (sy - this.view.ty) / this.view.k };
+  }
+
+  /** World coordinates of the visible centre. */
   center(): { x: number; y: number } {
     const r = this.svg.getBoundingClientRect();
-    return { x: r.width / 2, y: r.height / 2 };
+    return this.screenToWorld(r.width / 2, r.height / 2);
   }
 
   atomAt(x: number, y: number): SandboxAtom | null {
@@ -151,8 +358,12 @@ export class SandboxView {
       p = { x: c.x + (k % 3 - 1) * 60, y: c.y + (Math.floor(k / 3) - 0.5) * 60 };
     }
     const box = this.svg.getBoundingClientRect();
-    this.model.addMolecule(toTemplate(m, p.x, p.y, BOND_LENGTH, { width: box.width, height: box.height, minBondPx: 36 }));
-    this.selection = null;
+    const fit = { width: box.width / this.view.k, height: box.height / this.view.k, minBondPx: 36 };
+    const ids = this.model.addMolecule(toTemplate(m, p.x, p.y, BOND_LENGTH, fit));
+    this.selected = new Set(ids); // freshly placed molecule is selected, ready to move/copy/delete
+    this.selectedBond = null;
+    this.ensureVisible(ids);
+    this.render();
     if (m.atomCount > 150) this.notify(`${m.name}: ${m.atomCount} atoms placed`);
   }
 
@@ -163,6 +374,7 @@ export class SandboxView {
       this.attachTo(symbol, sel);
       return;
     }
+    this.selected.clear();
     const c = this.center();
     const jitter = () => (Math.random() - 0.5) * 80;
     this.model.addAtom(symbol, c.x + jitter(), c.y + jitter());
@@ -205,26 +417,46 @@ export class SandboxView {
   private onPointerDown(e: PointerEvent): void {
     if (e.button !== 0) return;
     const p = this.toLocal(e.clientX, e.clientY)!;
+    const additive = e.ctrlKey || e.metaKey;
+
+    if (e.shiftKey) {
+      this.startMarquee(e);
+      return;
+    }
+
     const bondEl = (e.target as Element).closest('[data-bond]');
-    if (bondEl) {
+    if (bondEl && !additive) {
       const id = Number(bondEl.getAttribute('data-bond'));
       const res = this.model.cycleBondOrder(id);
       if (!res.ok) this.notify(res.reason!);
-      this.selection = { kind: 'bond', id };
-      this.render();
-      return;
-    }
-    const atom = this.atomAt(p.x, p.y);
-    if (!atom) {
-      this.selection = null;
+      this.selected.clear();
+      this.selectedBond = id;
       this.render();
       return;
     }
 
-    // In geometry mode the molecule is rigid: drag moves every atom of the fragment.
-    const group = this.geometryOn
-      ? this.model.fragments().find((f) => f.atomIds.includes(atom.id))!.atomIds
-      : [atom.id];
+    const atom = this.atomAt(p.x, p.y);
+    if (!atom) {
+      this.startPan(e);
+      return;
+    }
+    if (additive) {
+      // Ctrl/Cmd-click toggles the atom in the multi-selection.
+      if (this.selected.has(atom.id)) this.selected.delete(atom.id);
+      else this.selected.add(atom.id);
+      this.selectedBond = null;
+      this.render();
+      return;
+    }
+
+    // Drag moves the selection if the atom is part of a multi-selection, else the atom
+    // (or, in geometry mode, its whole rigid molecule).
+    let group: number[] = this.selected.size > 1 && this.selected.has(atom.id) ? [...this.selected] : [atom.id];
+    if (this.geometryOn) {
+      const ids = new Set(group);
+      for (const f of this.model.fragments()) if (f.atomIds.some((id) => ids.has(id))) f.atomIds.forEach((id) => ids.add(id));
+      group = [...ids];
+    }
     const origin = new Map(group.map((id) => {
       const a = this.model.getAtom(id);
       return [id, { x: a.x, y: a.y }];
@@ -236,8 +468,8 @@ export class SandboxView {
     const move = (m: PointerEvent) => {
       if (!dragging && Math.hypot(m.clientX - start.x, m.clientY - start.y) > DRAG_THRESHOLD_PX) dragging = true;
       if (!dragging) return;
-      const dx = m.clientX - start.x;
-      const dy = m.clientY - start.y;
+      const dx = (m.clientX - start.x) / this.view.k;
+      const dy = (m.clientY - start.y) / this.view.k;
       const next = new Map<number, { x: number; y: number }>();
       for (const [id, o] of origin) next.set(id, { x: o.x + dx, y: o.y + dy });
       this.model.setPositions(next);
@@ -246,7 +478,84 @@ export class SandboxView {
       this.svg.removeEventListener('pointermove', move);
       this.svg.removeEventListener('pointerup', up);
       this.svg.removeEventListener('pointercancel', up);
-      if (!dragging) this.clickAtom(atom.id);
+      if (dragging) this.model.commit(); // a finished drag is one undo step
+      else this.clickAtom(atom.id);
+    };
+    this.svg.addEventListener('pointermove', move);
+    this.svg.addEventListener('pointerup', up);
+    this.svg.addEventListener('pointercancel', up);
+  }
+
+  /** Left-drag on empty space pans the view; a click without movement clears the selection. */
+  private startPan(e: PointerEvent): void {
+    const start = { x: e.clientX, y: e.clientY, tx: this.view.tx, ty: this.view.ty };
+    let panning = false;
+    this.svg.setPointerCapture(e.pointerId);
+    const move = (m: PointerEvent) => {
+      if (!panning && Math.hypot(m.clientX - start.x, m.clientY - start.y) > DRAG_THRESHOLD_PX) {
+        panning = true;
+        this.svg.classList.add('panning');
+      }
+      if (!panning) return;
+      this.view.tx = start.tx + (m.clientX - start.x);
+      this.view.ty = start.ty + (m.clientY - start.y);
+      this.applyView();
+    };
+    const up = () => {
+      this.svg.removeEventListener('pointermove', move);
+      this.svg.removeEventListener('pointerup', up);
+      this.svg.removeEventListener('pointercancel', up);
+      this.svg.classList.remove('panning');
+      if (!panning) this.clearSelection();
+    };
+    this.svg.addEventListener('pointermove', move);
+    this.svg.addEventListener('pointerup', up);
+    this.svg.addEventListener('pointercancel', up);
+  }
+
+  /** Shift-drag draws a selection box; atoms inside are added to the selection. */
+  private startMarquee(e: PointerEvent): void {
+    const r = this.svg.getBoundingClientRect();
+    const sx = e.clientX - r.left;
+    const sy = e.clientY - r.top;
+    let box = { x: sx, y: sy, w: 0, h: 0 };
+    let dragged = false;
+    this.svg.setPointerCapture(e.pointerId);
+    const move = (m: PointerEvent) => {
+      const cx = Math.min(Math.max(m.clientX - r.left, 0), r.width);
+      const cy = Math.min(Math.max(m.clientY - r.top, 0), r.height);
+      if (!dragged && Math.hypot(cx - sx, cy - sy) <= DRAG_THRESHOLD_PX) return;
+      dragged = true;
+      box = { x: Math.min(sx, cx), y: Math.min(sy, cy), w: Math.abs(cx - sx), h: Math.abs(cy - sy) };
+      if (!this.marquee) {
+        this.marquee = el('rect', { class: 'marquee' });
+        this.svg.append(this.marquee);
+      }
+      for (const [k, v] of Object.entries({ x: box.x, y: box.y, width: box.w, height: box.h })) this.marquee.setAttribute(k, String(v));
+    };
+    const up = () => {
+      this.svg.removeEventListener('pointermove', move);
+      this.svg.removeEventListener('pointerup', up);
+      this.svg.removeEventListener('pointercancel', up);
+      this.marquee?.remove();
+      this.marquee = null;
+      if (dragged) {
+        const a = this.screenToWorld(box.x, box.y);
+        const b = this.screenToWorld(box.x + box.w, box.y + box.h);
+        for (const atom of this.model.getAtoms()) {
+          if (atom.x >= a.x && atom.x <= b.x && atom.y >= a.y && atom.y <= b.y) this.selected.add(atom.id);
+        }
+        this.selectedBond = null;
+      } else {
+        // Shift-click on an atom toggles it, like Ctrl-click.
+        const p = this.screenToWorld(sx, sy);
+        const atom = this.atomAt(p.x, p.y);
+        if (atom) {
+          if (this.selected.has(atom.id)) this.selected.delete(atom.id);
+          else this.selected.add(atom.id);
+        }
+      }
+      this.render();
     };
     this.svg.addEventListener('pointermove', move);
     this.svg.addEventListener('pointerup', up);
@@ -258,12 +567,13 @@ export class SandboxView {
     if (sel !== null && sel !== id) {
       const res = this.model.bond(sel, id);
       if (!res.ok) this.notify(res.reason!);
-      this.selection = null;
+      this.selected.clear();
     } else if (sel === id) {
-      this.selection = null;
+      this.selected.clear();
     } else {
-      this.selection = { kind: 'atom', id };
+      this.selected = new Set([id]);
     }
+    this.selectedBond = null;
     this.render();
   }
 
@@ -275,41 +585,70 @@ export class SandboxView {
     } else {
       const p = this.toLocal(e.clientX, e.clientY);
       const atom = p && this.atomAt(p.x, p.y);
-      if (atom) this.model.removeAtom(atom.id);
+      // Right-clicking any atom of a multi-selection deletes the whole selection.
+      if (atom && this.selected.size > 1 && this.selected.has(atom.id)) this.model.removeAtoms(this.selected);
+      else if (atom) this.model.removeAtom(atom.id);
     }
-    this.selection = null;
-    this.render();
+    this.clearSelection();
   }
 
   private onKey(e: KeyboardEvent): void {
-    if (e.key === 'Escape') {
-      this.selection = null;
-      this.render();
-    } else if ((e.key === 'Delete' || e.key === 'Backspace') && this.selection) {
-      if (this.selection.kind === 'atom') this.model.removeAtom(this.selection.id);
-      else this.model.removeBond(this.selection.id);
-      this.selection = null;
-      this.render();
+    if (isTyping(e.target)) return; // search box etc. keep their own shortcuts
+    const mod = e.ctrlKey || e.metaKey;
+    const key = e.key.toLowerCase();
+    if (mod && key === 'z') {
+      e.preventDefault();
+      if (e.shiftKey) this.redo();
+      else this.undo();
+    } else if (mod && key === 'y') {
+      e.preventDefault();
+      this.redo();
+    } else if (mod && key === 'c') {
+      if (this.copySelection()) e.preventDefault();
+    } else if (mod && key === 'x') {
+      e.preventDefault();
+      this.cutSelection();
+    } else if (mod && key === 'v') {
+      e.preventDefault();
+      this.paste();
+    } else if (mod && key === 'a') {
+      e.preventDefault();
+      this.selectAll();
+    } else if (!mod && key === 'f') {
+      this.fitView();
+    } else if (e.key === 'Escape') {
+      this.clearSelection();
+    } else if (e.key === 'Delete' || e.key === 'Backspace') {
+      if (this.selected.size || this.selectedBond !== null) {
+        e.preventDefault();
+        this.deleteSelection();
+      }
     }
   }
 
   // ---------- rendering ----------
   render(): void {
-    if (this.selection?.kind === 'atom' && !this.model.getAtoms().some((a) => a.id === this.selection!.id)) this.selection = null;
-    if (this.selection?.kind === 'bond' && !this.model.getBonds().some((b) => b.id === this.selection!.id)) this.selection = null;
+    for (const id of [...this.selected]) if (!this.model.hasAtom(id)) this.selected.delete(id);
+    if (this.selectedBond !== null && !this.model.getBonds().some((b) => b.id === this.selectedBond)) this.selectedBond = null;
 
     this.svg.replaceChildren();
+    this.gridPattern = null;
     if (this.geometryOn) {
       const defs = el('defs');
       const pattern = el('pattern', { id: 'grid', width: 24, height: 24, patternUnits: 'userSpaceOnUse' });
       pattern.append(el('path', { d: 'M 24 0 L 0 0 0 24', class: 'grid-line' }));
       defs.append(pattern);
+      this.gridPattern = pattern;
       this.svg.append(defs, el('rect', { width: '100%', height: '100%', fill: 'url(#grid)' }));
     }
+    this.root = el('g', { class: 'world' }) as SVGGElement;
     const bondLayer = el('g');
     const decoLayer = el('g');
     const atomLayer = el('g');
-    this.svg.append(bondLayer, decoLayer, atomLayer);
+    this.root.append(bondLayer, decoLayer, atomLayer);
+    this.svg.append(this.root);
+    if (this.marquee) this.svg.append(this.marquee);
+    this.applyView();
 
     const issues = this.model.mode === 'hard' ? this.model.bondOrderIssues() : new Set<number>();
 
@@ -317,7 +656,7 @@ export class SandboxView {
       const a = this.model.getAtom(bond.a);
       const b = this.model.getAtom(bond.b);
       const g = el('g', { class: 'bond-group', 'data-bond': String(bond.id) });
-      if (this.selection?.kind === 'bond' && this.selection.id === bond.id) g.classList.add('selected');
+      if (this.selectedBond === bond.id) g.classList.add('selected');
       if (issues.has(bond.id)) g.classList.add('wrong');
       const style = this.geometryOn ? this.bondStyles.get(bond.id) : undefined;
       if (style && style.depth !== 0) {
@@ -349,7 +688,7 @@ export class SandboxView {
       g.append(el('title', {}, `${info.name} — ${this.model.usedValence(atom.id)} bond order used of max ${Math.max(0, ...info.valences)}`));
       const status = this.model.valenceStatus(atom.id);
       if (status === 'open') g.append(el('circle', { class: 'open-ring', r: r + 5 }));
-      if (this.selectedAtomId === atom.id) g.append(el('circle', { class: 'select-ring', r: r + 4 }));
+      if (this.selected.has(atom.id)) g.append(el('circle', { class: 'select-ring', r: r + 4 }));
       g.append(el('circle', { class: 'body', r, fill: atomFill(atom.symbol) }));
       g.append(el('text', { fill: textColorFor(atom.symbol), 'font-size': atom.symbol.length > 1 ? 13 : r < ATOM_R ? 12 : 15 }, atom.symbol));
       if (atom.charge) {
@@ -377,7 +716,7 @@ export class SandboxView {
       layer.append(el('circle', { class: 'lone-pair', cx: cx + px, cy: cy + py, r: 2.2 }));
       layer.append(el('circle', { class: 'lone-pair', cx: cx - px, cy: cy - py, r: 2.2 }));
     }
-    if (!geo.arc || !geo.angleLabel) return;
+    if (!this.anglesOn || !geo.arc || !geo.angleLabel) return;
     const [a1, a2] = geo.arc;
     let delta = Math.atan2(Math.sin(a2 - a1), Math.cos(a2 - a1));
     if (Math.abs(Math.abs(delta) - Math.PI) < 1e-6) delta = Math.PI;

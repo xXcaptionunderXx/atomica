@@ -31,19 +31,35 @@ export interface SandboxAtom {
 
 /** A complete structure to place in one step (coordinates in sandbox pixels). */
 export interface MoleculeTemplate {
+  /** Library name for the whole template ('' = hand-built atoms, no name tracking). */
   name: string;
   symbols: string[];
   positions: { x: number; y: number }[];
   /** [atomIndexA, atomIndexB, order] */
   bonds: [number, number, number][];
   charges?: number[];
+  /** Copy/paste: per-atom index into `originGroups` (-1 = none), overriding `name`. */
+  originIndex?: number[];
+  originGroups?: Origin[];
 }
 
-interface Origin {
+export interface Origin {
   name: string;
   size: number;
   formula: string;
 }
+
+/** Serialized model state used by undo/redo (TSK-UI-006). */
+interface Snapshot {
+  atoms: SandboxAtom[];
+  bonds: SandboxBond[];
+  origins: [number, Origin][];
+  nextAtomId: number;
+  nextBondId: number;
+  nextOrigin: number;
+}
+
+const HISTORY_LIMIT = 200;
 
 export interface SandboxBond {
   id: number;
@@ -89,6 +105,9 @@ export class MoleculeModel {
   private issuesCache: { version: number; ids: Set<number> } | null = null;
   private origins = new Map<number, Origin>();
   private nextOrigin = 1;
+  private undoStack: string[] = [];
+  private redoStack: string[] = [];
+  private baseline = this.serialize();
 
   // ---------- queries ----------
   get mode(): BuildMode {
@@ -105,6 +124,10 @@ export class MoleculeModel {
 
   getBonds(): SandboxBond[] {
     return [...this.bonds.values()];
+  }
+
+  hasAtom(id: number): boolean {
+    return this.atoms.has(id);
   }
 
   getAtom(id: number): SandboxAtom {
@@ -179,7 +202,9 @@ export class MoleculeModel {
     if (mode === this._mode) return;
     this._mode = mode;
     if (mode === 'easy') this.autoAssignOrders();
-    this.changed();
+    this._version++;
+    this.refreshBaseline(); // a settings change, not an undoable edit
+    this.emit();
   }
 
   addAtom(symbol: string, x: number, y: number): SandboxAtom {
@@ -193,10 +218,25 @@ export class MoleculeModel {
   /** Place a whole structure (e.g. from the biomolecule library) as one change. Returns atom ids. */
   addMolecule(t: MoleculeTemplate): number[] {
     t.symbols.forEach((s) => getElement(s)); // validate before mutating anything
-    const origin = this.nextOrigin++;
-    this.origins.set(origin, { name: t.name, size: t.symbols.length, formula: hillFormula(t.symbols) });
+    let originOf: (i: number) => number | undefined;
+    if (t.originGroups && t.originIndex) {
+      const keys = t.originGroups.map((g) => {
+        const k = this.nextOrigin++;
+        this.origins.set(k, { ...g });
+        return k;
+      });
+      originOf = (i) => (t.originIndex![i] >= 0 ? keys[t.originIndex![i]] : undefined);
+    } else if (t.name) {
+      const k = this.nextOrigin++;
+      this.origins.set(k, { name: t.name, size: t.symbols.length, formula: hillFormula(t.symbols) });
+      originOf = () => k;
+    } else {
+      originOf = () => undefined;
+    }
     const ids = t.symbols.map((symbol, i) => {
-      const atom: SandboxAtom = { id: this.nextAtomId++, symbol, x: t.positions[i].x, y: t.positions[i].y, origin };
+      const atom: SandboxAtom = { id: this.nextAtomId++, symbol, x: t.positions[i].x, y: t.positions[i].y };
+      const origin = originOf(i);
+      if (origin !== undefined) atom.origin = origin;
       if (t.charges?.[i]) atom.charge = t.charges[i];
       this.atoms.set(atom.id, atom);
       return atom.id;
@@ -286,17 +326,128 @@ export class MoleculeModel {
   }
 
   removeAtom(id: number): void {
-    for (const b of this.bondsOf(id)) this.bonds.delete(b.id);
-    this.atoms.delete(id);
+    this.removeAtoms([id]);
+  }
+
+  /** Delete many atoms (and their bonds) as one change / one undo step. */
+  removeAtoms(ids: Iterable<number>): void {
+    const gone = new Set(ids);
+    if (gone.size === 0) return;
+    for (const b of [...this.bonds.values()]) if (gone.has(b.a) || gone.has(b.b)) this.bonds.delete(b.id);
+    for (const id of gone) this.atoms.delete(id);
     if (this._mode === 'easy') this.autoAssignOrders();
     this.changed();
   }
 
+  /**
+   * Copy a set of atoms (with the bonds between them, charges and library-name tracking) as a
+   * template that `addMolecule` can paste. Positions are kept, so callers offset them.
+   */
+  extract(ids: Iterable<number>): MoleculeTemplate | null {
+    const list = [...new Set(ids)].filter((id) => this.atoms.has(id)).sort((a, b) => a - b);
+    if (list.length === 0) return null;
+    const index = new Map(list.map((id, i) => [id, i]));
+    const groupIndex = new Map<number, number>();
+    const originGroups: Origin[] = [];
+    const atoms = list.map((id) => this.getAtom(id));
+    const originIndex = atoms.map((a) => {
+      if (a.origin === undefined || !this.origins.has(a.origin)) return -1;
+      if (!groupIndex.has(a.origin)) {
+        groupIndex.set(a.origin, originGroups.length);
+        originGroups.push({ ...this.origins.get(a.origin)! });
+      }
+      return groupIndex.get(a.origin)!;
+    });
+    const bonds: [number, number, number][] = [];
+    for (const b of this.bonds.values()) {
+      if (index.has(b.a) && index.has(b.b)) bonds.push([index.get(b.a)!, index.get(b.b)!, b.order]);
+    }
+    return {
+      name: '',
+      symbols: atoms.map((a) => a.symbol),
+      positions: atoms.map((a) => ({ x: a.x, y: a.y })),
+      bonds,
+      charges: atoms.map((a) => a.charge ?? 0),
+      originIndex,
+      originGroups,
+    };
+  }
+
   clear(): void {
+    if (this.atoms.size === 0) return;
     this.atoms.clear();
     this.bonds.clear();
     this.origins.clear();
     this.changed();
+  }
+
+  // ---------- undo / redo (TSK-UI-006) ----------
+  get canUndo(): boolean {
+    return this.undoStack.length > 0;
+  }
+
+  get canRedo(): boolean {
+    return this.redoStack.length > 0;
+  }
+
+  /**
+   * Record the current state as one undo step if it differs from the last recorded state.
+   * Structural edits commit automatically; the view calls this after a drag (moves only emit).
+   */
+  commit(): void {
+    const snap = this.serialize();
+    if (snap === this.baseline) return;
+    this.undoStack.push(this.baseline);
+    if (this.undoStack.length > HISTORY_LIMIT) this.undoStack.shift();
+    this.redoStack = [];
+    this.baseline = snap;
+  }
+
+  /** Accept the current state as the baseline without an undo step (e.g. automatic re-layout). */
+  refreshBaseline(): void {
+    this.baseline = this.serialize();
+  }
+
+  undo(): boolean {
+    this.commit(); // keep any un-recorded move as its own step
+    const prev = this.undoStack.pop();
+    if (prev === undefined) return false;
+    this.redoStack.push(this.baseline);
+    this.restore(prev);
+    return true;
+  }
+
+  redo(): boolean {
+    const next = this.redoStack.pop();
+    if (next === undefined) return false;
+    this.undoStack.push(this.serialize());
+    this.restore(next);
+    return true;
+  }
+
+  private serialize(): string {
+    const snap: Snapshot = {
+      atoms: [...this.atoms.values()],
+      bonds: [...this.bonds.values()],
+      origins: [...this.origins.entries()],
+      nextAtomId: this.nextAtomId,
+      nextBondId: this.nextBondId,
+      nextOrigin: this.nextOrigin,
+    };
+    return JSON.stringify(snap);
+  }
+
+  private restore(json: string): void {
+    const snap = JSON.parse(json) as Snapshot;
+    this.atoms = new Map(snap.atoms.map((a) => [a.id, a]));
+    this.bonds = new Map(snap.bonds.map((b) => [b.id, b]));
+    this.origins = new Map(snap.origins);
+    this.nextAtomId = snap.nextAtomId;
+    this.nextBondId = snap.nextBondId;
+    this.nextOrigin = snap.nextOrigin;
+    this.baseline = json;
+    this._version++;
+    this.emit();
   }
 
   subscribe(fn: () => void): () => void {
@@ -306,6 +457,7 @@ export class MoleculeModel {
 
   private changed(): void {
     this._version++;
+    this.commit();
     this.emit();
   }
 

@@ -1,4 +1,4 @@
-/** ATOMICA 2D molecule sandbox entry point — Tasks TSK-UI-001, TSK-UI-004, TSK-UI-005. */
+/** ATOMICA 2D molecule sandbox entry point — Tasks TSK-UI-001, TSK-UI-004, TSK-UI-005, TSK-UI-006. */
 
 import './styles.css';
 import { MoleculeModel, type BuildMode } from './sandbox/MoleculeModel';
@@ -53,6 +53,16 @@ initLibraryPanel($<HTMLElement>('#library'), {
 
 initThemeToggle($<HTMLButtonElement>('#theme-btn'));
 $<HTMLButtonElement>('#clear-btn').addEventListener('click', () => model.clear());
+const undoBtn = $<HTMLButtonElement>('#undo-btn');
+const redoBtn = $<HTMLButtonElement>('#redo-btn');
+undoBtn.addEventListener('click', () => view.undo());
+redoBtn.addEventListener('click', () => view.redo());
+const syncHistoryButtons = () => {
+  undoBtn.disabled = !model.canUndo;
+  redoBtn.disabled = !model.canRedo;
+};
+model.subscribe(syncHistoryButtons);
+syncHistoryButtons();
 
 // ---------- Easy / Hard ----------
 const modeButtons = [...document.querySelectorAll<HTMLButtonElement>('#mode-seg button')];
@@ -68,9 +78,24 @@ applyMode(load('atomica-mode') === 'hard' ? 'hard' : 'easy');
 const geoToggle = $<HTMLInputElement>('#geo-toggle');
 geoToggle.checked = load('atomica-geometry') === '1';
 view.setGeometry(geoToggle.checked);
+const anglesToggle = $<HTMLInputElement>('#angles-toggle');
+const anglesLabel = $<HTMLLabelElement>('#angles-label');
+anglesToggle.checked = load('atomica-angles') !== '0';
+view.setAngles(anglesToggle.checked);
+const syncAnglesToggle = () => {
+  // Angles are only drawn on the geometry grid.
+  anglesToggle.disabled = !geoToggle.checked;
+  anglesLabel.classList.toggle('disabled', !geoToggle.checked);
+};
+syncAnglesToggle();
+anglesToggle.addEventListener('change', () => {
+  save('atomica-angles', anglesToggle.checked ? '1' : '0');
+  view.setAngles(anglesToggle.checked);
+});
 geoToggle.addEventListener('change', () => {
   save('atomica-geometry', geoToggle.checked ? '1' : '0');
   view.setGeometry(geoToggle.checked);
+  syncAnglesToggle();
   renderFragments();
 });
 

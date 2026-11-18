@@ -136,7 +136,7 @@ button:hover { border-color: var(--accent); }
 }
 
 /* ---------- workspace ---------- */
-.workspace { position: relative; flex: 1; display: flex; min-height: 0; }
+.workspace { position: relative; flex: 1; display: flex; min-height: 0; overflow: hidden; }
 
 /* ---------- molecule library (TSK-UI-005) ---------- */
 .library {
@@ -208,7 +208,35 @@ button:hover { border-color: var(--accent); }
 }
 .atom .charge-badge { fill: var(--surface); stroke: var(--muted); stroke-width: 1; }
 .atom .charge-text { font-size: 10px; font-weight: 700; fill: var(--text); }
-.sandbox { flex: 1; height: 100%; background: var(--sandbox); display: block; touch-action: none; }
+/* The sandbox clips its own content: molecules never draw over the table or panels (TSK-UI-006). */
+.sandbox-wrap { position: relative; flex: 1; min-width: 0; min-height: 0; overflow: hidden; }
+.sandbox {
+  width: 100%;
+  height: 100%;
+  background: var(--sandbox);
+  display: block;
+  touch-action: none;
+  overflow: hidden;
+  cursor: grab;
+}
+.sandbox.panning { cursor: grabbing; }
+.sandbox .atom, .sandbox .bond-group { cursor: pointer; }
+.marquee { fill: color-mix(in srgb, var(--accent) 12%, transparent); stroke: var(--accent); stroke-width: 1; stroke-dasharray: 4 3; }
+.view-controls {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  display: flex;
+  gap: 2px;
+  padding: 3px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  opacity: 0.92;
+}
+.view-controls button { min-width: 30px; padding: 3px 8px; font-size: 12px; }
+.toggle.disabled { opacity: 0.45; }
+button:disabled { opacity: 0.45; cursor: default; }
 .panel {
   width: 260px;
   overflow-y: auto;

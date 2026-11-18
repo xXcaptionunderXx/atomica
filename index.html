@@ -28,6 +28,11 @@
         <label class="toggle" title="Arrange molecules by VSEPR geometry and show bond angles">
           <input type="checkbox" id="geo-toggle" /> Geometry grid
         </label>
+        <label class="toggle" id="angles-label" title="Show or hide bond-angle arcs and degree labels (geometry grid)">
+          <input type="checkbox" id="angles-toggle" /> Bond angles
+        </label>
+        <button id="undo-btn" type="button" title="Undo (Ctrl+Z)">Undo</button>
+        <button id="redo-btn" type="button" title="Redo (Ctrl+Shift+Z)">Redo</button>
         <button id="clear-btn" type="button">Clear</button>
         <button id="theme-btn" type="button" aria-label="Toggle light/dark mode"></button>
       </div>
@@ -35,7 +40,9 @@
     <section id="periodic-table" class="periodic-table" aria-label="Periodic table"></section>
     <main class="workspace">
       <aside id="library" class="library" aria-label="Molecule library"></aside>
-      <svg id="sandbox" class="sandbox" aria-label="Molecule sandbox"></svg>
+      <div class="sandbox-wrap">
+        <svg id="sandbox" class="sandbox" aria-label="Molecule sandbox"></svg>
+      </div>
       <aside class="panel">
         <h2>Molecules</h2>
         <ul id="fragments"></ul>
@@ -50,6 +57,9 @@
             <li><b>Easy:</b> double/triple bonds are chosen for you. <b>Hard:</b> click a bond (or bond the same pair again) to cycle single → double → triple; <span class="red-text">red</span> bonds have the wrong order.</li>
             <li><b>Geometry grid:</b> molecules snap to their real VSEPR shape with bond angles, wedges (toward you), dashes (away) and lone-pair dots. Drag moves the whole molecule.</li>
             <li>Right-click or <kbd>Delete</kbd> removes.</li>
+            <li><b>Move around:</b> drag empty space to pan, scroll to zoom (sandbox only); <b>Fit</b> or <kbd>F</kbd> frames everything.</li>
+            <li><b>Select several:</b> <kbd>Shift</kbd>+drag a box, or <kbd>Ctrl</kbd>+click atoms. Drag any selected atom to move them all; <kbd>Delete</kbd> or right-click removes them all.</li>
+            <li><kbd>Ctrl</kbd>+<kbd>C</kbd> / <kbd>X</kbd> / <kbd>V</kbd> copy, cut, paste (at the mouse) · <kbd>Ctrl</kbd>+<kbd>A</kbd> select all · <kbd>Ctrl</kbd>+<kbd>Z</kbd> undo · <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Z</kbd> redo.</li>
           </ul>
           <p class="note">Bonding uses common valences as an approximation; it ignores formal charges,
             coordinate bonds and ionic/metallic character. Dashed ring = unfilled valence. Angles are idealised
