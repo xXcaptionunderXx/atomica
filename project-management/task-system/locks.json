@@ -1,6 +1,49 @@
 {
   "version": "1.0.0",
-  "locks": {},
+  "locks": {
+    "src/ui/SandboxView.ts": {
+      "agent": "claude",
+      "taskId": "TSK-UI-006",
+      "acquiredAt": "2026-11-18T22:38:23.044777+00:00",
+      "expiresAt": "2026-11-19T10:38:23.044788+00:00"
+    },
+    "src/sandbox/MoleculeModel.ts": {
+      "agent": "claude",
+      "taskId": "TSK-UI-006",
+      "acquiredAt": "2026-11-18T22:38:23.044777+00:00",
+      "expiresAt": "2026-11-19T10:38:23.044788+00:00"
+    },
+    "src/sandbox/History.ts": {
+      "agent": "claude",
+      "taskId": "TSK-UI-006",
+      "acquiredAt": "2026-11-18T22:38:23.044777+00:00",
+      "expiresAt": "2026-11-19T10:38:23.044788+00:00"
+    },
+    "src/main.ts": {
+      "agent": "claude",
+      "taskId": "TSK-UI-006",
+      "acquiredAt": "2026-11-18T22:38:23.044777+00:00",
+      "expiresAt": "2026-11-19T10:38:23.044788+00:00"
+    },
+    "index.html": {
+      "agent": "claude",
+      "taskId": "TSK-UI-006",
+      "acquiredAt": "2026-11-18T22:38:23.044777+00:00",
+      "expiresAt": "2026-11-19T10:38:23.044788+00:00"
+    },
+    "src/styles.css": {
+      "agent": "claude",
+      "taskId": "TSK-UI-006",
+      "acquiredAt": "2026-11-18T22:38:23.044777+00:00",
+      "expiresAt": "2026-11-19T10:38:23.044788+00:00"
+    },
+    "tests/sandbox": {
+      "agent": "claude",
+      "taskId": "TSK-UI-006",
+      "acquiredAt": "2026-11-18T22:38:23.044777+00:00",
+      "expiresAt": "2026-11-19T10:38:23.044788+00:00"
+    }
+  },
   "tasks": {
     "TSK-ENG-001": {
       "agent": "gemini",
@@ -93,6 +136,20 @@
       ],
       "claimedAt": "2026-11-18T21:44:55.729694+00:00",
       "releasedAt": "2026-11-18T22:05:12.649925+00:00"
+    },
+    "TSK-UI-006": {
+      "agent": "claude",
+      "status": "IN_PROGRESS",
+      "files": [
+        "src/ui/SandboxView.ts",
+        "src/sandbox/MoleculeModel.ts",
+        "src/sandbox/History.ts",
+        "src/main.ts",
+        "index.html",
+        "src/styles.css",
+        "tests/sandbox"
+      ],
+      "claimedAt": "2026-11-18T22:38:23.044777+00:00"
     }
   }
 }
