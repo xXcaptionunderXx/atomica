@@ -84,7 +84,49 @@ Per **Section 19**, ATOMICA maintains a single canonical Obsidian vault at `docs
 
 ---
 
-## 6. How to Edit, Test, Commit, and Push Changes
+## 6. Fallen Leaf Task Coordinator & Exclusive File Locking (Section 22)
+
+> **MANDATORY CONCURRENCY RULE: Claude and Gemini must NEVER work on the same code or modify the same files simultaneously.**
+
+All task claiming and file reservations are enforced programmatically through `scripts/coordinator.py`:
+
+```bash
+# Check coordinator status and active locks:
+python scripts/coordinator.py status
+
+# Claim a task and exclusively lock its files before editing:
+python scripts/coordinator.py claim --agent claude --task TSK-ENG-002 --files src/anatomy/HierarchyTree.ts src/anatomy/NavigationState.ts tests/anatomy/hierarchy.test.ts
+
+# Check if a specific file is free:
+python scripts/coordinator.py check --file src/chemistry/PubChemClient.ts
+
+# Release task locks upon completion and review submission:
+python scripts/coordinator.py release --agent claude --task TSK-ENG-002 --status REVIEW --summary "Implemented Organism-to-Atom hierarchy tree with tests"
+```
+
+---
+
+## 7. Open-Source Scientific Stack & Core Product Vision (Section 23)
+
+### The Vision:
+Nobody has built a unified, seamless zoom from a full **Organism down to individual Atoms** integrated with real 3D macromolecular libraries and interactive simulation mechanics. This is ATOMICA's breakthrough.
+
+### Key Scientific Principles:
+1. **Don't Re-invent Existing Libraries:**
+   - Real molecules come directly from **PubChem** (PUG-REST: Creatine, Glucose, ATP).
+   - Real macromolecular structures come directly from **RCSB PDB** (`rcsb.org`: SARS-CoV-2 spike, ACE2, Hemoglobin).
+   - Mesoscale viral and cellular packing builds on methods from **cellPACK** and **MesoCraft**.
+   - Anatomical hierarchies draw from **Z-Anatomy** and **BodyParts3D**.
+   - Molecular visualization leverages **Mol\*** and **Three.js**.
+   - Sandbox physics uses **Rapier**; atomistic dynamics references **OpenMM**; systems biology references **COPASI** and **SBML**.
+2. **Structure $\neq$ Emergent Function:**
+   - AlphaFold predicts static geometry, not biological dynamics. Simulation mode for known interactions relies on **curated, hand-written biochemical rules** (e.g. "Spike glycoprotein binds ACE2 receptor active site").
+3. **Biological Randomness:**
+   - Real biology is intrinsically stochastic (Brownian diffusion, transcriptional bursting). Fixed deterministic rules are pedagogical approximations, complemented by **Gillespie stochastic simulation (SSA)**.
+
+---
+
+## 8. How to Edit, Test, Commit, and Push Changes
 
 Since you are running locally on the user's workstation:
 
