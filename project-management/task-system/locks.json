@@ -1,0 +1,17 @@
+{
+  "version": "1.0.0",
+  "locks": {},
+  "tasks": {
+    "TSK-ENG-001": {
+      "agent": "gemini",
+      "status": "REVIEW",
+      "files": [
+        "src/chemistry/PubChemClient.ts",
+        "src/proteins/PdbClient.ts",
+        "tests/chemistry/pubchem.test.ts"
+      ],
+      "claimedAt": "2026-11-18T20:41:57.201692+00:00",
+      "releasedAt": "2026-11-18T20:43:13.138842+00:00"
+    }
+  }
+}

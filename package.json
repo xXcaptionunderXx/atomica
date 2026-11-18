@@ -1,0 +1,38 @@
+{
+  "name": "atomica",
+  "version": "0.1.0",
+  "description": "A Complete Chemistry & Biological Simulation Sandbox",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "task:status": "python scripts/coordinator.py status",
+    "task:list": "python scripts/coordinator.py list-locks"
+  },
+  "dependencies": {
+    "@dimforge/rapier2d-compat": "^0.14.0",
+    "three": "^0.170.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.9.0",
+    "@types/three": "^0.170.0",
+    "typescript": "^5.6.3",
+    "vite": "^5.4.11",
+    "vitest": "^2.1.5"
+  },
+  "keywords": [
+    "chemistry",
+    "simulation",
+    "biology",
+    "vsepr",
+    "molecular-dynamics",
+    "pdb",
+    "pubchem",
+    "mesoscale"
+  ],
+  "author": "ATOMICA Multi-Agent Team (Claude & Gemini)",
+  "license": "Apache-2.0"
+}
