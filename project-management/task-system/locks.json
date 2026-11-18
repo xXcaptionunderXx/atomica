@@ -1,61 +1,6 @@
 {
   "version": "1.0.0",
-  "locks": {
-    "index.html": {
-      "agent": "claude",
-      "taskId": "TSK-UI-001",
-      "acquiredAt": "2026-11-18T20:54:56.741846+00:00",
-      "expiresAt": "2026-11-19T08:54:56.741854+00:00"
-    },
-    "vite.config.ts": {
-      "agent": "claude",
-      "taskId": "TSK-UI-001",
-      "acquiredAt": "2026-11-18T20:54:56.741846+00:00",
-      "expiresAt": "2026-11-19T08:54:56.741854+00:00"
-    },
-    "src/main.ts": {
-      "agent": "claude",
-      "taskId": "TSK-UI-001",
-      "acquiredAt": "2026-11-18T20:54:56.741846+00:00",
-      "expiresAt": "2026-11-19T08:54:56.741854+00:00"
-    },
-    "src/styles.css": {
-      "agent": "claude",
-      "taskId": "TSK-UI-001",
-      "acquiredAt": "2026-11-18T20:54:56.741846+00:00",
-      "expiresAt": "2026-11-19T08:54:56.741854+00:00"
-    },
-    "src/ui": {
-      "agent": "claude",
-      "taskId": "TSK-UI-001",
-      "acquiredAt": "2026-11-18T20:54:56.741846+00:00",
-      "expiresAt": "2026-11-19T08:54:56.741854+00:00"
-    },
-    "src/sandbox": {
-      "agent": "claude",
-      "taskId": "TSK-UI-001",
-      "acquiredAt": "2026-11-18T20:54:56.741846+00:00",
-      "expiresAt": "2026-11-19T08:54:56.741854+00:00"
-    },
-    "src/chemistry/elements.ts": {
-      "agent": "claude",
-      "taskId": "TSK-UI-001",
-      "acquiredAt": "2026-11-18T20:54:56.741846+00:00",
-      "expiresAt": "2026-11-19T08:54:56.741854+00:00"
-    },
-    "tests/sandbox": {
-      "agent": "claude",
-      "taskId": "TSK-UI-001",
-      "acquiredAt": "2026-11-18T20:54:56.741846+00:00",
-      "expiresAt": "2026-11-19T08:54:56.741854+00:00"
-    },
-    "tests/chemistry/elements.test.ts": {
-      "agent": "claude",
-      "taskId": "TSK-UI-001",
-      "acquiredAt": "2026-11-18T20:54:56.741846+00:00",
-      "expiresAt": "2026-11-19T08:54:56.741854+00:00"
-    }
-  },
+  "locks": {},
   "tasks": {
     "TSK-ENG-001": {
       "agent": "gemini",
@@ -81,7 +26,7 @@
     },
     "TSK-UI-001": {
       "agent": "claude",
-      "status": "IN_PROGRESS",
+      "status": "REVIEW",
       "files": [
         "index.html",
         "vite.config.ts",
@@ -93,7 +38,8 @@
         "tests/sandbox",
         "tests/chemistry/elements.test.ts"
       ],
-      "claimedAt": "2026-11-18T20:54:56.741846+00:00"
+      "claimedAt": "2026-11-18T20:54:56.741846+00:00",
+      "releasedAt": "2026-11-18T21:00:15.655802+00:00"
     }
   }
 }
