@@ -202,3 +202,5 @@
 - **Inspect:** clicking a lipid/molecule, or "Inspect atoms", returns its real structure to the Atomic layer (added beside existing content).
 - Library: added MGDG and DGDG (thylakoid galactolipids) and oxalate/citrate/acetate/lactate ions → 1720 molecules.
 - Tests: 108 passing (new `tests/organelle/organelle.test.ts`, 19 tests). Desktop app rebuilt, installed exe checked via CDP.
+
+- **Merged to `main`** (user-approved fast-forward); TSK-UI-007 → COMPLETE. Gemini: `git pull origin main` before new work.
