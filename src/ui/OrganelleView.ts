@@ -237,6 +237,18 @@ export class OrganelleView {
     host.append(bar);
   }
 
+  /** Is this screen point over the sandbox at all / over the organelle itself? (drag & drop) */
+  isOverSandbox(clientX: number, clientY: number): boolean {
+    const r = this.svg.getBoundingClientRect();
+    return r.width > 0 && clientX >= r.left && clientX <= r.right && clientY >= r.top && clientY <= r.bottom;
+  }
+
+  isOverOrganelle(clientX: number, clientY: number): boolean {
+    if (!this.isOverSandbox(clientX, clientY)) return false;
+    const hit = document.elementFromPoint(clientX, clientY);
+    return !!hit?.closest('.org-lumen, .lipid, .protein, .org-slot, .org-membrane-guide, .ribo-subunit, .trna');
+  }
+
   /** Centre the organelle (call after the view becomes visible). */
   fit(): void {
     const r = this.svg.getBoundingClientRect();

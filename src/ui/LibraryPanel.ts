@@ -86,7 +86,7 @@ export function initLibraryPanel(root: HTMLElement, cb: LibraryPanelCallbacks): 
         meta.className = 'lib-meta';
         meta.innerHTML = `<span class="lib-formula">${formulaHtml(m.formula, m.charge)}</span>${cat ? '' : `<span class="lib-cat">${escapeHtml(m.category)}</span>`}`;
         li.append(name, meta);
-        li.addEventListener('pointerdown', (ev) => startDrag(ev, m, cb));
+        li.addEventListener('pointerdown', (ev) => dragItem(ev, m.name, (x, y) => cb.onPlace(m, x, y)));
         return li;
       }),
     );
@@ -120,7 +120,12 @@ export function initLibraryPanel(root: HTMLElement, cb: LibraryPanelCallbacks): 
     });
 }
 
-function startDrag(ev: PointerEvent, m: Biomolecule, cb: LibraryPanelCallbacks): void {
+/**
+ * Click-or-drag on a library row. A plain click calls `drop()` with no position; a drag shows a
+ * ghost and calls `drop(x, y)` where it is released. `zone` (optional) is highlighted while the
+ * pointer is over it, so the user sees where the item will land.
+ */
+function dragItem(ev: PointerEvent, label: string, drop: (clientX?: number, clientY?: number) => void, zone?: HTMLElement | null, ghostClass = 'molecule-ghost'): void {
   if (ev.button !== 0) return;
   ev.preventDefault();
   const sx = ev.clientX;
@@ -129,14 +134,15 @@ function startDrag(ev: PointerEvent, m: Biomolecule, cb: LibraryPanelCallbacks):
   const move = (e: PointerEvent) => {
     if (!ghost && Math.hypot(e.clientX - sx, e.clientY - sy) > DRAG_THRESHOLD_PX) {
       ghost = document.createElement('div');
-      ghost.className = 'drag-ghost molecule-ghost';
-      ghost.textContent = m.name;
+      ghost.className = `drag-ghost ${ghostClass}`;
+      ghost.textContent = label;
       document.body.appendChild(ghost);
       document.body.style.cursor = 'grabbing';
     }
     if (ghost) {
       ghost.style.left = `${e.clientX}px`;
       ghost.style.top = `${e.clientY}px`;
+      if (zone) zone.classList.toggle('drop-over', inside(zone, e.clientX, e.clientY));
     }
   };
   const end = (e: PointerEvent | null) => {
@@ -144,15 +150,16 @@ function startDrag(ev: PointerEvent, m: Biomolecule, cb: LibraryPanelCallbacks):
     window.removeEventListener('pointerup', up);
     window.removeEventListener('pointercancel', cancel);
     document.body.style.cursor = '';
+    zone?.classList.remove('drop-over');
     if (!e) {
       ghost?.remove();
       return;
     }
     if (ghost) {
       ghost.remove();
-      cb.onPlace(m, e.clientX, e.clientY);
+      drop(e.clientX, e.clientY);
     } else {
-      cb.onPlace(m);
+      drop();
     }
   };
   const up = (e: PointerEvent) => end(e);
@@ -160,6 +167,11 @@ function startDrag(ev: PointerEvent, m: Biomolecule, cb: LibraryPanelCallbacks):
   window.addEventListener('pointermove', move);
   window.addEventListener('pointerup', up);
   window.addEventListener('pointercancel', cancel);
+}
+
+function inside(el: HTMLElement, x: number, y: number): boolean {
+  const r = el.getBoundingClientRect();
+  return x >= r.left && x <= r.right && y >= r.top && y <= r.bottom;
 }
 
 function escapeHtml(s: string): string {
@@ -171,8 +183,11 @@ function escapeHtml(s: string): string {
 // ---------------------------------------------------------------------------
 
 export interface OrganelleLibraryCallbacks {
-  onBlueprint(id: string): void;
-  onMolecule(m: Biomolecule): void;
+  /** Click (no position) or drop at a screen position. */
+  onBlueprint(id: string, clientX?: number, clientY?: number): void;
+  onMolecule(m: Biomolecule, clientX?: number, clientY?: number): void;
+  /** The organelle sandbox, highlighted while something is dragged over it. */
+  dropZone?: () => HTMLElement | null;
 }
 
 export function initOrganelleLibrary(root: HTMLElement, cb: OrganelleLibraryCallbacks): void {
@@ -206,13 +221,21 @@ export function initOrganelleLibrary(root: HTMLElement, cb: OrganelleLibraryCall
   let groups: string[] = [];
   let molecules: Biomolecule[] = [];
 
-  const item = (title: string, meta: string, tip: string, onClick: () => void, badge?: string) => {
+  /** `drop` makes the row draggable (click = drop without a position); otherwise it is click-only. */
+  const item = (title: string, meta: string, tip: string, onClick: () => void, badge?: string, drop?: (x?: number, y?: number) => void) => {
     const li = document.createElement('li');
     li.className = 'lib-item';
     li.setAttribute('role', 'option');
     li.title = tip;
     li.innerHTML = `<div class="lib-name">${escapeHtml(title)}${badge ? ` <span class="lib-badge">${escapeHtml(badge)}</span>` : ''}</div><div class="lib-meta">${meta}</div>`;
-    li.addEventListener('click', onClick);
+    if (drop) {
+      li.classList.add('draggable');
+      li.addEventListener('pointerdown', (ev) =>
+        dragItem(ev, title, (x, y) => (x === undefined ? onClick() : drop(x, y)), cb.dropZone?.(), 'organelle-ghost'),
+      );
+    } else {
+      li.addEventListener('click', onClick);
+    }
     return li;
   };
 
@@ -241,20 +264,20 @@ export function initOrganelleLibrary(root: HTMLElement, cb: OrganelleLibraryCall
       const hits = searchBiomolecules(molecules, q);
       total = hits.length;
       nodes = hits.slice(0, RENDER_LIMIT).map((m) =>
-        item(m.name, `<span class="lib-formula">${formulaHtml(m.formula, m.charge)}</span><span class="lib-cat">${escapeHtml(m.category)}</span>`, `${m.name}\nClick to add one to the surroundings (free molecule)`, () => cb.onMolecule(m)),
+        item(m.name, `<span class="lib-formula">${formulaHtml(m.formula, m.charge)}</span><span class="lib-cat">${escapeHtml(m.category)}</span>`, `${m.name}\nClick to add one to the surroundings · drag onto the organelle to build it in`, () => cb.onMolecule(m), undefined, (x, y) => cb.onMolecule(m, x, y)),
       );
     } else {
       const ql = q.trim().toLowerCase();
       const bps = BLUEPRINTS.filter((b) => !ql || b.name.toLowerCase().includes(ql) || b.go.toLowerCase().includes(ql));
       if (cat === '' || cat === 'buildable') {
-        nodes.push(...bps.map((b) => item(b.name, `<span>${b.go}</span><span class="lib-cat">buildable</span>`, `${b.summary}\nClick to build (replaces the current organelle)`, () => cb.onBlueprint(b.id), 'Build')));
+        nodes.push(...bps.map((b) => item(b.name, `<span>${b.go}</span><span class="lib-cat">buildable</span>`, `${b.summary}\nClick or drag into the sandbox to build (replaces the current organelle)`, () => cb.onBlueprint(b.id), 'Build', (x, y) => cb.onBlueprint(b.id, x, y))));
         total += bps.length;
       }
       if (cat !== 'buildable') {
         const hits = searchCatalog(terms, q, cat || undefined);
         total += hits.length;
         nodes.push(
-          ...hits.slice(0, RENDER_LIMIT).map((t) => item(t.name, `<span>${t.id}</span><span class="lib-cat">${escapeHtml(t.group)}</span>`, `${t.definition}\nClick for details`, () => showTerm(t), t.blueprint && BLUEPRINT_BY_ID[t.blueprint].go === t.id ? 'Build' : undefined)),
+          ...hits.slice(0, RENDER_LIMIT).map((t) => item(t.name, `<span>${t.id}</span><span class="lib-cat">${escapeHtml(t.group)}</span>`, `${t.definition}\nClick for details${t.blueprint ? ` · drag into the sandbox to build the ${BLUEPRINT_BY_ID[t.blueprint].name.toLowerCase()}` : ''}`, () => showTerm(t), t.blueprint && BLUEPRINT_BY_ID[t.blueprint].go === t.id ? 'Build' : undefined, t.blueprint ? (x, y) => cb.onBlueprint(t.blueprint!, x, y) : undefined)),
         );
       }
     }

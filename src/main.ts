@@ -291,7 +291,9 @@ const organellePanel = initOrganellePanel($<HTMLElement>('#organelle-panel'), or
   notify,
 });
 initOrganelleLibrary($<HTMLElement>('#organelle-library'), {
-  onBlueprint: (id) => {
+  dropZone: () => document.querySelector<HTMLElement>('#organelle-view')?.parentElement ?? null,
+  onBlueprint: (id, x, y) => {
+    if (x !== undefined && y !== undefined && !organelleView.isOverSandbox(x, y)) return; // dropped outside the sandbox
     const prev = organelle.blueprint;
     if (prev?.id === id) {
       notify(`${prev.name} is already being built`);
@@ -300,10 +302,14 @@ initOrganelleLibrary($<HTMLElement>('#organelle-library'), {
     organelle.setBlueprint(id);
     notify(prev ? `Replaced the ${prev.name.toLowerCase()} with a ${organelle.blueprint!.name.toLowerCase()} (Ctrl+Z undoes)` : `Started a ${organelle.blueprint!.name.toLowerCase()}`);
   },
-  onMolecule: (m) => {
+  onMolecule: (m, x, y) => {
+    const dropped = x !== undefined && y !== undefined;
+    if (dropped && !organelleView.isOverSandbox(x, y)) return;
+    // Dropped onto the organelle: build it in where it fits; anywhere else: a free molecule.
+    const onto = dropped && organelleView.isOverOrganelle(x, y);
     void libReady.then(() => {
-      organelle.addSpecies([libSpecies(m)], 1, 'pool');
-      notify(`${m.name} added to the surroundings`);
+      const [p] = organelle.addSpecies([libSpecies(m)], 1, onto ? 'auto' : 'pool');
+      notify(p.where === 'pool' ? `${m.name} added to the surroundings${onto ? ' (no place for it in this organelle)' : ''}` : `${m.name} → ${whereLabel(p.where)}`);
     });
   },
 });

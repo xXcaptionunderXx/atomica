@@ -403,3 +403,8 @@ button.small { padding: 1px 7px; font-size: 11px; margin-left: 6px; text-transfo
 .org-seq { width: 100%; box-sizing: border-box; font: 12px ui-monospace, monospace; padding: 5px 7px; color: var(--text); background: var(--sandbox); border: 1px solid var(--border); border-radius: 6px; margin: 3px 0; }
 .ok-text { color: #059669 !important; }
 .warn-text { color: #b45309 !important; }
+
+/* drag & drop into the organelle sandbox (TSK-UI-008) */
+#organelle-library .lib-item.draggable { cursor: grab; }
+.organelle-ghost { width: auto !important; height: auto !important; padding: 4px 10px; margin: -14px 0 0 12px !important; border-radius: 10px !important; font-size: 12px; font-weight: 650; white-space: nowrap; background: var(--surface); color: var(--text); border-color: #7c3aed !important; }
+.sandbox-wrap.drop-over { box-shadow: inset 0 0 0 3px var(--accent); }
