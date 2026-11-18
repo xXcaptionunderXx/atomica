@@ -10,7 +10,9 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "task:status": "python scripts/coordinator.py status",
-    "task:list": "python scripts/coordinator.py list-locks"
+    "task:list": "python scripts/coordinator.py list-locks",
+    "app": "vite build && electron .",
+    "app:build": "vite build && electron-builder --win portable"
   },
   "dependencies": {
     "@dimforge/rapier2d-compat": "^0.14.0",
@@ -19,6 +21,8 @@
   "devDependencies": {
     "@types/node": "^22.9.0",
     "@types/three": "^0.170.0",
+    "electron": "^33.4.11",
+    "electron-builder": "^25.1.8",
     "typescript": "^5.6.3",
     "vite": "^5.4.11",
     "vitest": "^2.1.5"
@@ -34,5 +38,25 @@
     "mesoscale"
   ],
   "author": "ATOMICA Multi-Agent Team (Claude & Gemini)",
-  "license": "Apache-2.0"
+  "license": "Apache-2.0",
+  "main": "electron/main.cjs",
+  "build": {
+    "appId": "com.atomica.sandbox",
+    "productName": "ATOMICA Sandbox",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**",
+      "electron/**",
+      "package.json"
+    ],
+    "win": {
+      "target": "portable",
+      "signAndEditExecutable": false
+    },
+    "portable": {
+      "artifactName": "ATOMICA-Sandbox-${version}.exe"
+    }
+  }
 }

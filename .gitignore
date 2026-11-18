@@ -81,3 +81,6 @@ pnpm-debug.log*
 docs/obsidian/.obsidian/workspace*
 docs/obsidian/.obsidian/cache*
 docs/obsidian/.obsidian/indexeddb*
+
+# Desktop app build output
+release/

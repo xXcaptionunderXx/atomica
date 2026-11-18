@@ -131,3 +131,10 @@
   - Tests: `tests/chemistry/elements.test.ts`, `tests/sandbox/molecule.test.ts` (15 tests). Verified in-browser: H2O built by drag-drop, third H refused with message, click-bonding, theme switch.
   - Dev server port moved 3000 → 5317 (3000 collides with another local project).
 - **Approximation:** bonding capacity = max common valence/oxidation state; no formal charges, dative, ionic or metallic bonding.
+
+---
+
+### [2026-11-18] Session 006: Windows desktop app (TSK-UI-002)
+- **Agent:** Claude
+- **Summary:** Wrapped the 2D sandbox in Electron (`electron/main.cjs`, sandboxed renderer, no Node integration). `npm run app` runs it in a window; `npm run app:build` produces a portable `release/ATOMICA-Sandbox-<version>.exe` (~75 MB, no install). Vite `base: './'` so the built `dist/` loads from disk. Verified the packaged app renders 118 element tiles and the themed sandbox.
+- **Note:** `win.signAndEditExecutable: false` — electron-builder's winCodeSign archive needs symlink privileges on Windows; the exe is unsigned anyway (SmartScreen may warn on first launch) and has the default Electron icon.
