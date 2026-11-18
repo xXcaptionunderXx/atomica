@@ -84,3 +84,4 @@ docs/obsidian/.obsidian/indexeddb*
 
 # Desktop app build output
 release/
+dist/

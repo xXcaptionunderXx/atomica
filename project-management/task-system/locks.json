@@ -1,13 +1,6 @@
 {
   "version": "1.0.0",
-  "locks": {
-    "docs/obsidian": {
-      "agent": "gemini",
-      "taskId": "TSK-DOC-002",
-      "acquiredAt": "2026-11-18T21:00:50.779026+00:00",
-      "expiresAt": "2026-11-19T09:00:50.779035+00:00"
-    }
-  },
+  "locks": {},
   "tasks": {
     "TSK-ENG-001": {
       "agent": "gemini",
@@ -50,11 +43,12 @@
     },
     "TSK-DOC-002": {
       "agent": "gemini",
-      "status": "IN_PROGRESS",
+      "status": "COMPLETE",
       "files": [
         "docs/obsidian"
       ],
-      "claimedAt": "2026-11-18T21:00:50.779026+00:00"
+      "claimedAt": "2026-11-18T21:00:50.779026+00:00",
+      "releasedAt": "2026-11-18T21:09:49.568361+00:00"
     },
     "TSK-UI-002": {
       "agent": "claude",
