@@ -97,3 +97,33 @@ describe('Hill formula and molecular weight', () => {
     expect(molecularWeight(glucose)).toBeCloseTo(180.156, 2);
   });
 });
+
+describe('Formal charges and whole-molecule placement (TSK-UI-005)', () => {
+  it('shifts allowed valences by formal charge', () => {
+    const m = new MoleculeModel();
+    const ids = m.addMolecule({
+      name: 'test',
+      symbols: ['N', 'O', 'C'],
+      positions: [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 2, y: 0 }],
+      bonds: [],
+      charges: [1, -1, 0],
+    });
+    expect(m.valencesOf(ids[0])).toContain(4); // ammonium-like N+
+    expect(m.valencesOf(ids[1])).toContain(1); // alkoxide O-
+    expect(m.valencesOf(ids[2])).toEqual([4]);
+  });
+
+  it('adds a whole molecule as a single change', () => {
+    const m = new MoleculeModel();
+    let calls = 0;
+    m.subscribe(() => calls++);
+    m.addMolecule({
+      name: 'Water',
+      symbols: ['O', 'H', 'H'],
+      positions: [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: -1, y: 0 }],
+      bonds: [[0, 1, 1], [0, 2, 1]],
+    });
+    expect(calls).toBe(1);
+    expect(m.fragments()[0].match?.name).toBe('Water');
+  });
+});

@@ -160,3 +160,15 @@
 - **Agent:** Claude (user-approved merge).
 - Fast-forwarded `main` to `agent/claude/2d-molecule-sandbox`: TSK-ENG-002 (hierarchy), TSK-UI-001 (2D sandbox), TSK-UI-002 (Electron exe), TSK-UI-003 (desktop shortcut), TSK-UI-004 (easy/hard, names, VSEPR geometry) → COMPLETE. 57 tests, typecheck and production build pass.
 - **Gemini:** `git pull origin main` before new work. Please do new work on a feature branch (ideally in your own `git worktree`) rather than switching branches in the shared checkout — the user's desktop app is served from its `release/` folder. 3D remains PAUSED per the user's 2D-first directive.
+
+
+---
+
+### [2026-11-18] Session 010: Biomolecule library (TSK-UI-005)
+- **Agent:** Claude. Branch `agent/claude/biomolecule-library`.
+- **Library:** 1718 real molecules in 23 categories (amino acids, peptides, sugars, sugar phosphates, organic acids, nucleotides, cofactors, vitamins, 110+ absorbable mineral forms and free ions, fatty acids, lipids, steroids/hormones, bile acids, neurotransmitters, porphyrins, polyphenols, carotenoids, alkaloids, gases, antibiotics/microbial metabolites, common medicines).
+- **Data:** names in `src/chemistry/biomolecules/names.txt` → `scripts/build-biomolecule-library.mjs` resolves each via PubChem PUG-REST (public domain) to its 2D record (explicit H, kekulized orders, formal charges) + synonyms → bundled `library.json` (1.7 MB, lazy-loaded, works offline). Re-run the script after editing names.txt (cache in `scripts/.biomol-cache/`, gitignored).
+- **UI:** collapsible left panel (`src/ui/LibraryPanel.ts`) with search (name, synonym, formula; Enter adds top hit) and category dropdown; click to add, drag to place.
+- **Model:** atoms carry formal charge; valences shift by charge (O⁻→1, N⁺→4) so ions/zwitterions are complete and not flagged red; `addMolecule()` places a structure in one change without re-solving orders; unedited placements keep their exact name; salts PubChem draws as separate ions are labelled "part of <compound>". Library names are registered into the formula lookup.
+- **Perf:** geometry layout cached per unchanged molecule; spring relaxation rewritten on typed arrays (B12 1.1 s → ~70 ms).
+- Tests: 80 passing (new `tests/chemistry/biomolecules.test.ts`: ≥1000 entries, record integrity, key formulas/charges, search, placement, >99% of uncharged CHNOPS molecules valence-complete). Desktop app rebuilt and shortcut verified.

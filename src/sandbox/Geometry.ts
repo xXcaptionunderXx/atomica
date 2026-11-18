@@ -350,43 +350,61 @@ function relax(
   pos: Map<number, { x: number; y: number }>,
   len: (a: number, b: number, order: number) => number,
 ): void {
-  const bonded = new Set(bonds.map((b) => `${Math.min(b.a, b.b)}-${Math.max(b.a, b.b)}`));
+  // Same spring model as before, on typed arrays (large fused systems such as B12 or steroids
+  // have hundreds of atoms, and the pairwise repulsion is O(n^2) per iteration).
+  const n = atoms.length;
+  const index = new Map(atoms.map((a, i) => [a.id, i]));
+  const x = new Float64Array(n);
+  const y = new Float64Array(n);
+  atoms.forEach((a, i) => {
+    const p = pos.get(a.id)!;
+    x[i] = p.x;
+    y[i] = p.y;
+  });
+  const bonded = new Uint8Array(n * n);
+  const bi = bonds.map((b) => index.get(b.a)!);
+  const bj = bonds.map((b) => index.get(b.b)!);
+  const rest = bonds.map((b) => len(b.a, b.b, b.order));
+  for (let k = 0; k < bonds.length; k++) {
+    bonded[bi[k] * n + bj[k]] = 1;
+    bonded[bj[k] * n + bi[k]] = 1;
+  }
+  const fx = new Float64Array(n);
+  const fy = new Float64Array(n);
   for (let iter = 0; iter < 400; iter++) {
-    const f = new Map(atoms.map((a) => [a.id, { x: 0, y: 0 }]));
-    for (const b of bonds) {
-      const p = pos.get(b.a)!;
-      const q = pos.get(b.b)!;
-      const dx = q.x - p.x;
-      const dy = q.y - p.y;
+    fx.fill(0);
+    fy.fill(0);
+    for (let k = 0; k < bonds.length; k++) {
+      const a = bi[k];
+      const b = bj[k];
+      const dx = x[b] - x[a];
+      const dy = y[b] - y[a];
       const d = Math.hypot(dx, dy) || 0.01;
-      const k = (0.2 * (d - len(b.a, b.b, b.order))) / d;
-      f.get(b.a)!.x += k * dx;
-      f.get(b.a)!.y += k * dy;
-      f.get(b.b)!.x -= k * dx;
-      f.get(b.b)!.y -= k * dy;
+      const f = (0.2 * (d - rest[k])) / d;
+      fx[a] += f * dx;
+      fy[a] += f * dy;
+      fx[b] -= f * dx;
+      fy[b] -= f * dy;
     }
-    for (let i = 0; i < atoms.length; i++) {
-      for (let j = i + 1; j < atoms.length; j++) {
-        const a = atoms[i].id;
-        const b = atoms[j].id;
-        if (bonded.has(`${Math.min(a, b)}-${Math.max(a, b)}`)) continue;
-        const p = pos.get(a)!;
-        const q = pos.get(b)!;
-        const dx = q.x - p.x;
-        const dy = q.y - p.y;
+    for (let i = 0; i < n; i++) {
+      for (let j = i + 1; j < n; j++) {
+        const dx = x[j] - x[i];
+        if (dx > 110 || dx < -110) continue;
+        const dy = y[j] - y[i];
+        if (dy > 110 || dy < -110 || bonded[i * n + j]) continue;
         const d = Math.hypot(dx, dy) || 0.01;
         if (d > 110) continue;
-        const k = (0.15 * (110 - d)) / d;
-        f.get(a)!.x -= k * dx;
-        f.get(a)!.y -= k * dy;
-        f.get(b)!.x += k * dx;
-        f.get(b)!.y += k * dy;
+        const f = (0.15 * (110 - d)) / d;
+        fx[i] -= f * dx;
+        fy[i] -= f * dy;
+        fx[j] += f * dx;
+        fy[j] += f * dy;
       }
     }
-    for (const a of atoms) {
-      const p = pos.get(a.id)!;
-      p.x += f.get(a.id)!.x;
-      p.y += f.get(a.id)!.y;
+    for (let i = 0; i < n; i++) {
+      x[i] += fx[i];
+      y[i] += fy[i];
     }
   }
+  atoms.forEach((a, i) => pos.set(a.id, { x: x[i], y: y[i] }));
 }

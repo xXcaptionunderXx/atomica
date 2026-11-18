@@ -34,6 +34,7 @@
     </header>
     <section id="periodic-table" class="periodic-table" aria-label="Periodic table"></section>
     <main class="workspace">
+      <aside id="library" class="library" aria-label="Molecule library"></aside>
       <svg id="sandbox" class="sandbox" aria-label="Molecule sandbox"></svg>
       <aside class="panel">
         <h2>Molecules</h2>
@@ -42,6 +43,7 @@
           <summary>How to use</summary>
           <ul>
             <li>Drag an element from the table into the sandbox.</li>
+            <li><b>Molecule library</b> (left): search 1000+ real biomolecules, vitamins and mineral forms by name, synonym or formula; click one to add it, or drag it to a spot. Structures come from PubChem.</li>
             <li>Drop it <b>on an atom</b> to bond it there.</li>
             <li>Click an atom, then another atom, to bond them.</li>
             <li>With an atom selected, click an element in the table to attach it.</li>
@@ -52,7 +54,8 @@
           <p class="note">Bonding uses common valences as an approximation; it ignores formal charges,
             coordinate bonds and ionic/metallic character. Dashed ring = unfilled valence. Angles are idealised
             VSEPR values (real molecules differ slightly, e.g. H₂S is 92°). Names are matched by formula, so isomers
-            are listed as alternatives.</p>
+            are listed as alternatives. Library molecules keep PubChem's formal charges (shown as ⁺/⁻ badges);
+            ionic compounds such as calcium carbonate appear as their separate ions.</p>
         </details>
       </aside>
       <div id="toast" class="toast" role="status"></div>

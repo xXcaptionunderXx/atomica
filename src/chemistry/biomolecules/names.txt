@@ -1,0 +1,1804 @@
+# Biomolecule library source list (TSK-UI-005).
+# One compound per line, grouped under "# Category" headers.
+# "Display name|PubChem query" when the PubChem name differs from the label shown in the app.
+# Structures are resolved from PubChem by scripts/build-biomolecule-library.mjs into library.json.
+
+# Amino acids
+Glycine
+L-Alanine
+L-Valine
+L-Leucine
+L-Isoleucine
+L-Proline
+L-Phenylalanine
+L-Tryptophan
+L-Methionine
+L-Serine
+L-Threonine
+L-Cysteine
+L-Tyrosine
+L-Asparagine
+L-Glutamine
+L-Aspartic acid
+L-Glutamic acid
+L-Lysine
+L-Arginine
+L-Histidine
+L-Selenocysteine
+L-Pyrrolysine
+L-Ornithine
+L-Citrulline
+Beta-alanine
+Gamma-aminobutyric acid (GABA)|gamma-aminobutyric acid
+Taurine
+Hypotaurine
+L-Homocysteine
+L-Cystine
+L-Cystathionine
+L-Homoserine
+Sarcosine
+N,N-Dimethylglycine
+Betaine
+L-Norleucine
+L-Norvaline
+2-Aminobutyric acid|2-aminobutyric acid
+3-Aminoisobutyric acid
+4-Hydroxyproline|trans-4-hydroxy-L-proline
+5-Hydroxylysine
+L-DOPA|levodopa
+5-Hydroxytryptophan
+L-Kynurenine
+3-Hydroxykynurenine
+Anthranilic acid
+L-Theanine
+L-Canavanine
+L-Saccharopine|saccharopine
+2-Aminoadipic acid
+L-Allysine|allysine
+Pipecolic acid
+D-Alanine
+D-Serine
+D-Aspartic acid
+Selenomethionine
+S-Adenosylmethionine
+S-Adenosylhomocysteine
+N-Acetylcysteine|acetylcysteine
+N-Acetylaspartic acid|N-acetyl-L-aspartic acid
+N-Acetylglutamic acid|N-acetyl-L-glutamic acid
+Pyroglutamic acid
+3-Methylhistidine|3-methyl-L-histidine
+1-Methylhistidine|1-methyl-L-histidine
+Ergothioneine
+Argininosuccinic acid
+Homoarginine
+Asymmetric dimethylarginine
+Symmetric dimethylarginine
+Thyronine
+3,5-Diiodo-L-tyrosine|3,5-diiodotyrosine
+3-Iodotyrosine|3-iodo-L-tyrosine
+Hydroxyisoleucine|4-hydroxyisoleucine
+L-Mimosine|mimosine
+Azetidine-2-carboxylic acid
+Methionine sulfoxide
+
+# Peptides & amino acid derivatives
+Creatine
+Creatinine
+Phosphocreatine
+Guanidinoacetic acid
+L-Carnitine|levocarnitine
+Acetyl-L-carnitine|acetylcarnitine
+Propionyl-L-carnitine|propionylcarnitine
+Glutathione
+Glutathione disulfide
+Carnosine
+Anserine
+Homocarnosine
+Balenine
+Gamma-glutamylcysteine
+Cysteinylglycine
+Glycylglycine
+Aspartame
+Ophthalmic acid
+Hippuric acid
+Phenylacetylglutamine
+Indoxyl sulfate
+Agmatine
+Glycine betaine aldehyde|betaine aldehyde
+Trimethylamine N-oxide
+Trimethylamine
+Kyotorphin
+Thyrotropin-releasing hormone|protirelin
+Tuftsin
+Bradykinin
+Oxytocin
+Vasopressin|argipressin
+Met-enkephalin
+Leu-enkephalin
+Angiotensin II
+Glycyl-L-glutamine|glycylglutamine
+L-Alanyl-L-glutamine|alanylglutamine
+Pyroglutamyl-histidyl-glycine|pyroglutamylhistidylglycine
+Nicotinuric acid
+Cinnamoylglycine
+Isovalerylglycine
+Hexanoylglycine
+Suberylglycine
+Tiglylglycine
+Phenylacetylglycine
+
+# Sugars
+D-Glucose|glucose
+D-Fructose|fructose
+D-Galactose|galactose
+D-Mannose|mannose
+D-Ribose|ribose
+2-Deoxy-D-ribose|deoxyribose
+D-Xylose|xylose
+L-Arabinose|arabinose
+D-Lyxose|lyxose
+D-Allose|allose
+D-Altrose|altrose
+D-Gulose|gulose
+D-Idose|idose
+D-Talose|talose
+D-Psicose|psicose
+D-Sorbose|L-sorbose
+D-Tagatose|tagatose
+D-Ribulose|ribulose
+D-Xylulose|xylulose
+D-Erythrose|erythrose
+D-Threose|threose
+D-Erythrulose|erythrulose
+D-Glyceraldehyde|glyceraldehyde
+Dihydroxyacetone
+Sedoheptulose
+Mannoheptulose
+L-Fucose|fucose
+L-Rhamnose|rhamnose
+Sucrose
+Lactose
+Maltose
+Trehalose
+Cellobiose
+Isomaltose
+Lactulose
+Turanose
+Melibiose
+Gentiobiose
+Kojibiose
+Nigerose
+Trehalulose
+Isomaltulose
+Raffinose
+Stachyose
+Verbascose
+Maltotriose
+Melezitose
+Kestose|1-kestose
+Panose
+Alpha-cyclodextrin
+Beta-cyclodextrin
+N-Acetylglucosamine
+N-Acetylgalactosamine
+D-Glucosamine|glucosamine
+D-Galactosamine|galactosamine
+D-Mannosamine|mannosamine
+N-Acetylmannosamine
+N-Acetylneuraminic acid
+N-Glycolylneuraminic acid
+Muramic acid
+N-Acetylmuramic acid
+D-Glucuronic acid|glucuronic acid
+D-Galacturonic acid|galacturonic acid
+L-Iduronic acid|iduronic acid
+D-Mannuronic acid|mannuronic acid
+L-Guluronic acid|guluronic acid
+D-Gluconic acid|gluconic acid
+Glucono-delta-lactone|glucono delta-lactone
+D-Glucaric acid|glucaric acid
+Galactaric acid|mucic acid
+L-Gulonolactone|L-gulonolactone
+L-Gulonic acid|gulonic acid
+2-Keto-L-gulonic acid|2-keto-L-gulonic acid
+Kdo (3-deoxy-D-manno-octulosonic acid)|3-deoxy-D-manno-octulosonic acid
+Sorbitol
+Mannitol
+Xylitol
+Erythritol
+Arabitol
+Ribitol
+Galactitol
+Glycerol
+Myo-inositol|inositol
+Scyllo-inositol|scyllo-inositol
+D-chiro-Inositol|D-chiro-inositol
+Pinitol
+Quebrachitol
+Maltitol
+Lactitol
+Isomalt
+1,5-Anhydroglucitol|1,5-anhydro-D-glucitol
+Levoglucosan
+Methyl alpha-D-glucopyranoside|methyl alpha-D-glucoside
+Arbutin
+Salicin
+Amygdalin
+Sialyllactose|3'-sialyllactose
+2'-Fucosyllactose
+Lacto-N-tetraose
+Chitobiose
+Hyaluronic acid disaccharide|hyalobiuronic acid
+Sucralose
+Neotame
+Stevioside
+Rebaudioside A
+Glycyrrhizin|glycyrrhizic acid
+Mogroside V
+
+# Sugar phosphates & glycolysis intermediates
+Glucose 6-phosphate|glucose-6-phosphate
+Glucose 1-phosphate|glucose-1-phosphate
+Fructose 6-phosphate|fructose-6-phosphate
+Fructose 1,6-bisphosphate|fructose-1,6-bisphosphate
+Fructose 2,6-bisphosphate|beta-D-fructose 2,6-bisphosphate
+Fructose 1-phosphate|fructose-1-phosphate
+Dihydroxyacetone phosphate
+Glyceraldehyde 3-phosphate|glyceraldehyde-3-phosphate
+1,3-Bisphosphoglycerate|1,3-bisphosphoglyceric acid
+2,3-Bisphosphoglycerate|2,3-bisphosphoglyceric acid
+3-Phosphoglycerate|3-phosphoglyceric acid
+2-Phosphoglycerate|2-phosphoglyceric acid
+Phosphoenolpyruvate|phosphoenolpyruvic acid
+Glycerol 3-phosphate|glycerol 3-phosphate
+6-Phosphogluconolactone|6-phosphonoglucono-delta-lactone
+6-Phosphogluconate|6-phosphogluconic acid
+Ribulose 5-phosphate|ribulose 5-phosphate
+Ribose 5-phosphate|ribose 5-phosphate
+Xylulose 5-phosphate|xylulose 5-phosphate
+Sedoheptulose 7-phosphate|sedoheptulose 7-phosphate
+Erythrose 4-phosphate|erythrose 4-phosphate
+Ribulose 1,5-bisphosphate|ribulose 1,5-bisphosphate
+Phosphoribosyl pyrophosphate
+Ribose 1-phosphate|ribose 1-phosphate
+Deoxyribose 5-phosphate|2-deoxy-D-ribose 5-phosphate
+Mannose 6-phosphate|mannose 6-phosphate
+Mannose 1-phosphate|mannose 1-phosphate
+Galactose 1-phosphate|galactose 1-phosphate
+Glucosamine 6-phosphate|glucosamine 6-phosphate
+N-Acetylglucosamine 6-phosphate|N-acetylglucosamine 6-phosphate
+N-Acetylglucosamine 1-phosphate|N-acetylglucosamine 1-phosphate
+Inositol 1,4,5-trisphosphate|inositol 1,4,5-trisphosphate
+Inositol hexakisphosphate (phytic acid)|phytic acid
+Inositol 1-phosphate|inositol 1-phosphate
+Trehalose 6-phosphate|trehalose 6-phosphate
+Sorbitol 6-phosphate|sorbitol 6-phosphate
+Glycolaldehyde
+Methylglyoxal
+2-Phosphoglycolate|2-phosphoglycolic acid
+Acetyl phosphate
+Carbamoyl phosphate
+Phosphoserine|O-phospho-L-serine
+Phosphothreonine|O-phospho-L-threonine
+Phosphotyrosine|O-phospho-L-tyrosine
+Phosphoethanolamine|O-phosphoethanolamine
+Phosphocholine
+Glycerophosphocholine|glycerylphosphorylcholine
+Glycerophosphoethanolamine|glycerophosphoethanolamine
+Pyrophosphate|pyrophosphoric acid
+Triphosphate|triphosphoric acid
+
+# Organic acids & metabolic intermediates
+Pyruvic acid
+L-Lactic acid|L-lactic acid
+Acetic acid
+Citric acid
+Isocitric acid
+Cis-aconitic acid
+Alpha-ketoglutaric acid|2-oxoglutaric acid
+Succinic acid
+Fumaric acid
+L-Malic acid|L-malic acid
+Oxaloacetic acid
+Glyoxylic acid
+Oxalic acid
+Oxalosuccinic acid
+Malonic acid
+Methylmalonic acid
+Glutaric acid
+Adipic acid
+Pimelic acid
+Suberic acid
+Azelaic acid
+Sebacic acid
+Formic acid
+Propionic acid
+Butyric acid
+Isobutyric acid
+Valeric acid
+Isovaleric acid
+2-Methylbutyric acid
+Caproic acid|hexanoic acid
+Acetoacetic acid
+Beta-hydroxybutyric acid|3-hydroxybutyric acid
+Acetone
+Alpha-ketobutyric acid|2-oxobutanoic acid
+Alpha-ketoisovaleric acid|3-methyl-2-oxobutanoic acid
+Alpha-ketoisocaproic acid|4-methyl-2-oxopentanoic acid
+Alpha-keto-beta-methylvaleric acid|3-methyl-2-oxopentanoic acid
+Beta-hydroxy-beta-methylbutyric acid|3-hydroxyisovaleric acid
+3-Hydroxy-3-methylglutaric acid|3-hydroxy-3-methylglutaric acid
+Mevalonic acid
+Mevalonolactone
+Glycolic acid
+Glyceric acid
+Tartaric acid|L-tartaric acid
+Tartronic acid
+Mesoxalic acid
+Maleic acid
+Itaconic acid
+Mesaconic acid
+Citramalic acid
+Homocitric acid
+2-Hydroxyglutaric acid
+Alpha-aminoadipic semialdehyde|2-aminoadipate 6-semialdehyde
+Succinic semialdehyde
+Malonic semialdehyde|3-oxopropanoic acid
+Methylmalonic semialdehyde|2-methyl-3-oxopropanoic acid
+Glutaconic acid
+Urocanic acid
+Imidazolone propionic acid|4-imidazolone-5-propanoic acid
+Formiminoglutamic acid|N-formimidoyl-L-glutamic acid
+Homovanillic acid
+Vanillylmandelic acid
+5-Hydroxyindoleacetic acid
+Indole-3-acetic acid
+Indole-3-propionic acid
+Indole-3-lactic acid
+Phenylpyruvic acid
+Phenyllactic acid|3-phenyllactic acid
+Phenylacetic acid
+4-Hydroxyphenylpyruvic acid
+4-Hydroxyphenylacetic acid
+Homogentisic acid
+Maleylacetoacetic acid|4-maleylacetoacetic acid
+Fumarylacetoacetic acid|4-fumarylacetoacetic acid
+Kynurenic acid
+Xanthurenic acid
+Quinolinic acid
+Picolinic acid
+3-Hydroxyanthranilic acid
+Orotic acid
+Dihydroorotic acid
+Carbamoyl aspartic acid|N-carbamoyl-L-aspartic acid
+Ureidopropionic acid|3-ureidopropionic acid
+Ureidoisobutyric acid|3-ureidoisobutyric acid
+Uric acid
+Allantoin
+Allantoic acid
+Urea
+Ammonium carbamate
+Cyanate|cyanic acid
+Thiocyanate|thiocyanic acid
+Lipoic acid
+Dihydrolipoic acid
+Sialic acid|N-acetylneuraminic acid
+Benzoic acid
+Salicylic acid
+Gallic acid
+Shikimic acid
+Chorismic acid
+Prephenic acid
+Quinic acid
+Cinnamic acid
+p-Coumaric acid
+Caffeic acid
+Ferulic acid
+Sinapic acid
+Chlorogenic acid
+Rosmarinic acid
+Ellagic acid
+Protocatechuic acid
+Vanillic acid
+Syringic acid
+Hydroxycinnamic acid|2-hydroxycinnamic acid
+Mandelic acid
+Phytanic acid
+Pristanic acid
+
+# Nucleobases, nucleosides & nucleotides
+Adenine
+Guanine
+Cytosine
+Thymine
+Uracil
+Hypoxanthine
+Xanthine
+5-Methylcytosine
+5-Hydroxymethylcytosine
+N6-Methyladenine|6-methyladenine
+7-Methylguanine
+Isoguanine
+Dihydrouracil|5,6-dihydrouracil
+Dihydrothymine|5,6-dihydrothymine
+Purine
+Pyrimidine
+Adenosine
+Guanosine
+Cytidine
+Uridine
+Thymidine
+Inosine
+Xanthosine
+Pseudouridine
+Deoxyadenosine
+Deoxyguanosine
+Deoxycytidine
+Deoxyuridine
+Deoxyinosine
+5-Methylcytidine
+N6-Methyladenosine
+7-Methylguanosine
+Ribothymidine|5-methyluridine
+Dihydrouridine
+Queuosine
+Wyosine
+Adenosine monophosphate|adenosine monophosphate
+Adenosine diphosphate|adenosine diphosphate
+Adenosine triphosphate|adenosine triphosphate
+Guanosine monophosphate|guanosine monophosphate
+Guanosine diphosphate|guanosine diphosphate
+Guanosine triphosphate|guanosine triphosphate
+Cytidine monophosphate|cytidine monophosphate
+Cytidine diphosphate|cytidine diphosphate
+Cytidine triphosphate|cytidine triphosphate
+Uridine monophosphate|uridine monophosphate
+Uridine diphosphate|uridine diphosphate
+Uridine triphosphate|uridine triphosphate
+Inosine monophosphate|inosinic acid
+Xanthosine monophosphate|xanthylic acid
+Thymidine monophosphate|thymidine monophosphate
+Thymidine diphosphate|thymidine diphosphate
+Thymidine triphosphate|thymidine triphosphate
+dAMP|deoxyadenosine monophosphate
+dADP|deoxyadenosine diphosphate
+dATP|deoxyadenosine triphosphate
+dGMP|deoxyguanosine monophosphate
+dGDP|deoxyguanosine diphosphate
+dGTP|deoxyguanosine triphosphate
+dCMP|deoxycytidine monophosphate
+dCDP|deoxycytidine diphosphate
+dCTP|deoxycytidine triphosphate
+dUMP|deoxyuridine monophosphate
+dUTP|deoxyuridine triphosphate
+Cyclic AMP|cyclic AMP
+Cyclic GMP|cyclic GMP
+Cyclic di-GMP|cyclic di-GMP
+cGAMP (2'3'-cyclic GMP-AMP)|2'3'-cGAMP
+ppGpp (guanosine tetraphosphate)|guanosine tetraphosphate
+Diadenosine tetraphosphate|diadenosine tetraphosphate
+Adenylosuccinic acid
+SAICAR|SAICAR
+AICAR|AICA ribonucleotide
+Orotidine 5'-monophosphate|orotidylic acid
+Adenosine 5'-phosphosulfate|adenosine 5'-phosphosulfate
+3'-Phosphoadenosine 5'-phosphosulfate (PAPS)|3'-phosphoadenosine-5'-phosphosulfate
+UDP-glucose|uridine diphosphate glucose
+UDP-galactose|uridine diphosphate galactose
+UDP-glucuronic acid|uridine diphosphate glucuronic acid
+UDP-N-acetylglucosamine|uridine diphosphate N-acetylglucosamine
+UDP-N-acetylgalactosamine|UDP-N-acetylgalactosamine
+UDP-xylose|UDP-xylose
+GDP-mannose|guanosine diphosphate mannose
+GDP-fucose|GDP-L-fucose
+CDP-choline|citicoline
+CDP-ethanolamine|CDP-ethanolamine
+CMP-N-acetylneuraminic acid|CMP-N-acetylneuraminic acid
+ADP-glucose|ADP-glucose
+ADP-ribose|adenosine diphosphate ribose
+Cyclic ADP-ribose|cyclic ADP-ribose
+Caffeine
+Theobromine
+Theophylline
+Paraxanthine
+Uric acid riboside|9-ribosyluric acid
+1-Methylxanthine
+3-Methylxanthine
+7-Methylxanthine
+1-Methyluric acid
+Zeatin
+Kinetin
+6-Benzylaminopurine
+Cordycepin
+Tubercidin
+Puromycin
+Azathioprine
+Mercaptopurine
+5-Fluorouracil|fluorouracil
+Zidovudine
+Acyclovir
+Ribavirin
+Allopurinol
+
+# Cofactors & coenzymes
+Nicotinamide adenine dinucleotide (NAD+)|nicotinamide adenine dinucleotide
+NADH|NADH
+NADP+|NADP
+NADPH|NADPH
+Flavin adenine dinucleotide (FAD)|flavin adenine dinucleotide
+FADH2|FADH2
+Flavin mononucleotide (FMN)|flavin mononucleotide
+Coenzyme A
+Acetyl-CoA|acetyl coenzyme A
+Malonyl-CoA|malonyl coenzyme A
+Succinyl-CoA|succinyl coenzyme A
+Propionyl-CoA|propionyl coenzyme A
+Methylmalonyl-CoA|methylmalonyl-CoA
+HMG-CoA|3-hydroxy-3-methylglutaryl-coenzyme A
+Acetoacetyl-CoA|acetoacetyl-CoA
+Butyryl-CoA|butyryl-CoA
+Palmitoyl-CoA|palmitoyl-CoA
+Benzoyl-CoA|benzoyl-CoA
+Crotonyl-CoA|crotonoyl-CoA
+Glutaryl-CoA|glutaryl-CoA
+Isovaleryl-CoA|isovaleryl-CoA
+Coenzyme Q10|ubiquinone-10
+Ubiquinol|ubiquinol-10
+Coenzyme Q1|ubiquinone-1
+Plastoquinone|plastoquinone-9
+Tetrahydrofolic acid
+5-Methyltetrahydrofolate|5-methyltetrahydrofolic acid
+5,10-Methylenetetrahydrofolate|5,10-methylenetetrahydrofolate
+10-Formyltetrahydrofolate|10-formyltetrahydrofolic acid
+Dihydrofolic acid
+Folinic acid|leucovorin
+Tetrahydrobiopterin|sapropterin
+Dihydrobiopterin|7,8-dihydrobiopterin
+Biopterin
+Neopterin
+Molybdopterin
+Thiamine pyrophosphate|thiamine pyrophosphate
+Pyridoxal 5'-phosphate|pyridoxal phosphate
+Pyridoxamine 5'-phosphate|pyridoxamine 5'-phosphate
+Lipoamide
+Biocytin
+Coenzyme M
+Coenzyme B|coenzyme B
+Coenzyme F420|coenzyme F420
+Methanofuran|methanofuran
+Tetrahydromethanopterin|tetrahydromethanopterin
+Pyrroloquinoline quinone
+Glutathionylspermidine
+Mycothiol
+Bacillithiol
+Trypanothione
+Heme B|heme
+Heme A|heme A
+Siroheme
+Coenzyme F430|cofactor F430
+Phosphopantetheine|4'-phosphopantetheine
+Pantetheine
+Dephospho-CoA|dephospho-coenzyme A
+S-Adenosylmethioninamine|S-adenosylmethioninamine
+Folate triglutamate|pteroyltriglutamic acid
+
+# Vitamins
+Vitamin A (retinol)|retinol
+Retinal|retinal
+11-cis-Retinal|11-cis-retinal
+Retinoic acid|tretinoin
+Retinyl palmitate
+Retinyl acetate
+Beta-carotene (provitamin A)|beta-carotene
+Vitamin B1 (thiamine)|thiamine
+Thiamine monophosphate
+Benfotiamine
+Vitamin B2 (riboflavin)|riboflavin
+Vitamin B3 (niacin)|niacin
+Nicotinamide (niacinamide)|nicotinamide
+Nicotinamide riboside
+Nicotinamide mononucleotide|nicotinamide mononucleotide
+Nicotinic acid mononucleotide|nicotinic acid mononucleotide
+Nicotinic acid riboside|nicotinic acid riboside
+Inositol hexanicotinate|inositol niacinate
+Vitamin B5 (pantothenic acid)|pantothenic acid
+Dexpanthenol|dexpanthenol
+Pantethine
+Calcium pantothenate
+Vitamin B6 (pyridoxine)|pyridoxine
+Pyridoxal
+Pyridoxamine
+4-Pyridoxic acid
+Vitamin B7 (biotin)|biotin
+Vitamin B9 (folic acid)|folic acid
+L-Methylfolate|levomefolic acid
+Vitamin B12 (cyanocobalamin)|cyanocobalamin
+Methylcobalamin|mecobalamin
+Adenosylcobalamin|cobamamide
+Hydroxocobalamin
+Vitamin C (ascorbic acid)|ascorbic acid
+Dehydroascorbic acid
+Sodium ascorbate
+Calcium ascorbate
+Ascorbyl palmitate
+Vitamin D2 (ergocalciferol)|ergocalciferol
+Vitamin D3 (cholecalciferol)|cholecalciferol
+Calcifediol (25-hydroxyvitamin D3)|calcifediol
+Calcitriol (1,25-dihydroxyvitamin D3)|calcitriol
+Ercalcidiol|25-hydroxyergocalciferol
+7-Dehydrocholesterol
+Ergosterol
+Vitamin E (alpha-tocopherol)|alpha-tocopherol
+Beta-tocopherol
+Gamma-tocopherol
+Delta-tocopherol
+Alpha-tocotrienol
+Gamma-tocotrienol
+Tocopheryl acetate|alpha-tocopherol acetate
+Tocopherol succinate|alpha-tocopherol succinate
+Vitamin K1 (phylloquinone)|phylloquinone
+Vitamin K2 MK-4 (menatetrenone)|menatetrenone
+Vitamin K2 MK-7|menaquinone 7
+Vitamin K3 (menadione)|menadione
+Menadiol
+Choline
+Inositol (vitamin B8)|myo-inositol
+Para-aminobenzoic acid|4-aminobenzoic acid
+Orotic acid (vitamin B13)|orotic acid
+Pangamic acid
+Carnitine (vitamin BT)|carnitine
+Lipoic acid (R-form)|R-lipoic acid
+Hesperidin (vitamin P)|hesperidin
+Thiamine hydrochloride
+Pyridoxine hydrochloride
+Riboflavin 5'-phosphate sodium|riboflavin 5'-phosphate sodium
+Sulbutiamine
+Fursultiamine
+Pyritinol
+
+# Minerals & absorbable mineral forms
+Calcium ion|calcium(2+)
+Magnesium ion|magnesium cation
+Sodium ion|sodium cation
+Potassium ion|potassium cation
+Iron(II) ion|ferrous ion
+Iron(III) ion|ferric ion
+Zinc ion|zinc cation
+Copper(II) ion|cupric ion
+Copper(I) ion|cuprous ion
+Manganese(II) ion|manganese(2+)
+Cobalt(II) ion|cobalt(2+)
+Chromium(III) ion|chromium(3+)
+Lithium ion|lithium cation
+Nickel(II) ion|nickel(2+)
+Chloride ion|chloride
+Iodide ion|iodide
+Fluoride ion|fluoride
+Bromide ion|bromide
+Phosphate ion|phosphate
+Hydrogen phosphate|hydrogen phosphate
+Dihydrogen phosphate|dihydrogen phosphate
+Sulfate ion|sulfate
+Bicarbonate ion|bicarbonate
+Carbonate ion|carbonate
+Oxalate ion|oxalate
+Citrate ion|citrate
+Acetate ion|acetate
+Lactate ion|lactate
+Nitrate ion|nitrate
+Nitrite ion|nitrite
+Selenite ion|selenite
+Selenate ion|selenate
+Molybdate ion|molybdate
+Iodate ion|iodate
+Borate|boric acid
+Orthosilicic acid|silicic acid
+Calcium carbonate
+Calcium citrate
+Calcium citrate malate|calcium citrate malate
+Calcium gluconate
+Calcium lactate
+Calcium lactate gluconate
+Calcium acetate
+Calcium chloride
+Calcium phosphate (tricalcium phosphate)|tricalcium phosphate
+Dicalcium phosphate|calcium hydrogen phosphate
+Calcium glycerophosphate
+Calcium hydroxyapatite|hydroxyapatite
+Calcium sulfate
+Calcium fluoride
+Calcium formate
+Calcium bisglycinate|calcium glycinate
+Magnesium oxide
+Magnesium citrate
+Magnesium glycinate|magnesium glycinate
+Magnesium malate
+Magnesium chloride
+Magnesium sulfate
+Magnesium lactate
+Magnesium gluconate
+Magnesium aspartate
+Magnesium L-threonate|magnesium L-threonate
+Magnesium hydroxide
+Magnesium carbonate
+Magnesium orotate
+Magnesium taurate|magnesium taurate
+Magnesium pidolate
+Ferrous sulfate
+Ferrous gluconate
+Ferrous fumarate
+Ferrous bisglycinate|ferrous bisglycinate
+Ferrous succinate
+Ferrous lactate
+Ferric citrate
+Ferric pyrophosphate
+Ferric ammonium citrate
+Ferric maltol
+Sodium ferric EDTA|sodium iron EDTA
+Zinc gluconate
+Zinc sulfate
+Zinc oxide
+Zinc picolinate
+Zinc citrate
+Zinc acetate
+Zinc bisglycinate|zinc glycinate
+Zinc carnosine|polaprezinc
+Zinc chloride
+Copper gluconate|copper gluconate
+Copper sulfate|cupric sulfate
+Cupric oxide
+Copper bisglycinate|copper glycinate
+Cupric chloride
+Manganese sulfate|manganese sulfate
+Manganese gluconate
+Manganese chloride|manganese chloride
+Sodium selenite
+Sodium selenate
+Methylselenocysteine|Se-methylselenocysteine
+Potassium iodide
+Potassium iodate
+Sodium iodide
+Chromium picolinate
+Chromium(III) chloride|chromium(III) chloride
+Chromium nicotinate|chromium nicotinate
+Sodium molybdate
+Ammonium molybdate
+Potassium chloride
+Potassium citrate
+Potassium gluconate
+Potassium bicarbonate
+Dipotassium phosphate
+Potassium sulfate
+Potassium aspartate
+Sodium chloride
+Sodium bicarbonate
+Trisodium citrate|sodium citrate
+Sodium phosphate (disodium phosphate)|disodium phosphate
+Sodium fluoride
+Sodium monofluorophosphate
+Stannous fluoride
+Lithium carbonate
+Lithium orotate
+Vanadyl sulfate
+Cobalt(II) chloride|cobalt(II) chloride
+Silica (silicon dioxide)|silicon dioxide
+Strontium ranelate
+Germanium dioxide|germanium dioxide
+Iron(III) oxide|ferric oxide
+Hemin|hemin
+
+# Fatty acids
+Octanoic acid (caprylic acid)|octanoic acid
+Decanoic acid (capric acid)|decanoic acid
+Lauric acid
+Myristic acid
+Pentadecanoic acid
+Palmitic acid
+Margaric acid|heptadecanoic acid
+Stearic acid
+Arachidic acid
+Behenic acid
+Lignoceric acid
+Cerotic acid
+Heptanoic acid
+Nonanoic acid
+Undecanoic acid
+Tridecanoic acid
+Myristoleic acid
+Palmitoleic acid
+Sapienic acid
+Oleic acid
+Elaidic acid
+Vaccenic acid
+Gadoleic acid
+Gondoic acid
+Erucic acid
+Nervonic acid
+Linoleic acid
+Alpha-linolenic acid
+Gamma-linolenic acid
+Stearidonic acid
+Dihomo-gamma-linolenic acid
+Arachidonic acid
+Eicosapentaenoic acid (EPA)|eicosapentaenoic acid
+Docosapentaenoic acid (DPA)|docosapentaenoic acid
+Docosahexaenoic acid (DHA)|doconexent
+Adrenic acid|docosatetraenoic acid
+Mead acid
+Conjugated linoleic acid (rumenic acid)|rumenic acid
+Punicic acid
+Ricinoleic acid
+Vernolic acid
+Petroselinic acid
+Pinolenic acid
+Eicosadienoic acid
+Columbinic acid
+Crepenynic acid
+Juniperonic acid
+Calendic acid
+Alpha-eleostearic acid|alpha-eleostearic acid
+Cis-4-decenoic acid|4-decenoic acid
+2-Hydroxystearic acid|2-hydroxystearic acid
+3-Hydroxypalmitic acid|3-hydroxypalmitic acid
+Omega-hydroxypalmitic acid|16-hydroxyhexadecanoic acid
+Dicarboxylic hexadecanedioic acid|hexadecanedioic acid
+Tuberculostearic acid
+Isopalmitic acid|14-methylpentadecanoic acid
+Anteisopentadecanoic acid|12-methyltetradecanoic acid
+Mycolic acid (alpha-mycolic acid)|alpha-mycolic acid
+Lactobacillic acid
+Sterculic acid
+Malvalic acid
+Chaulmoogric acid
+Cervonic acid|cervonic acid
+Timnodonic acid|timnodonic acid
+Clupanodonic acid
+Tetracosahexaenoic acid
+Osbond acid
+Valproic acid
+Hexadecenal|2-hexadecenal
+Palmitaldehyde|hexadecanal
+Oleamide
+Erucamide
+Palmitoylethanolamide
+Oleoylethanolamide
+Anandamide
+Stearoylethanolamide
+Linoleoylethanolamide
+N-Arachidonoyl dopamine|N-arachidonoyl dopamine
+Virodhamine
+Noladin ether
+
+# Lipids & glycerolipids
+Monopalmitin|1-monopalmitin
+Monoolein|1-monoolein
+2-Arachidonoylglycerol
+1,2-Dipalmitoylglycerol|1,2-dipalmitin
+1,2-Dioleoylglycerol|1,2-diolein
+Tripalmitin
+Triolein
+Tristearin
+Trilinolein
+Trimyristin
+Trilaurin
+Tricaprylin
+Tributyrin
+Triacetin
+Phosphatidic acid (dipalmitoyl)|1,2-dipalmitoyl-sn-glycero-3-phosphate
+Dipalmitoylphosphatidylcholine (DPPC)|dipalmitoylphosphatidylcholine
+POPC (palmitoyl-oleoyl phosphatidylcholine)|1-palmitoyl-2-oleoyl-sn-glycero-3-phosphocholine
+DOPC (dioleoylphosphatidylcholine)|1,2-dioleoyl-sn-glycero-3-phosphocholine
+DPPE (dipalmitoylphosphatidylethanolamine)|1,2-dipalmitoyl-sn-glycero-3-phosphoethanolamine
+POPE|1-palmitoyl-2-oleoyl-sn-glycero-3-phosphoethanolamine
+DOPE|1,2-dioleoyl-sn-glycero-3-phosphoethanolamine
+Phosphatidylserine (dioleoyl)|1,2-dioleoyl-sn-glycero-3-phospho-L-serine
+POPS|1-palmitoyl-2-oleoyl-sn-glycero-3-phospho-L-serine
+Phosphatidylglycerol (dipalmitoyl)|1,2-dipalmitoyl-sn-glycero-3-phospho-(1'-rac-glycerol)
+POPG|1-palmitoyl-2-oleoyl-sn-glycero-3-phospho-(1'-rac-glycerol)
+PIP2 (phosphatidylinositol 4,5-bisphosphate)|phosphatidylinositol 4,5-bisphosphate
+Lysophosphatidylcholine (palmitoyl)|1-palmitoyl-sn-glycero-3-phosphocholine
+Lysophosphatidic acid (oleoyl)|1-oleoyl lysophosphatidic acid
+Platelet-activating factor|platelet-activating factor
+Cardiolipin (tetralinoleoyl)|tetralinoleoyl cardiolipin
+Plasmalogen (PE, plasmenyl)|1-(1Z-octadecenyl)-2-oleoyl-sn-glycero-3-phosphoethanolamine
+Sphingosine
+Sphinganine
+Phytosphingosine
+Sphingosine 1-phosphate|sphingosine 1-phosphate
+Ceramide (C16)|N-palmitoylsphingosine
+Ceramide (C18)|N-stearoylsphingosine
+Ceramide 1-phosphate (C16)|ceramide 1-phosphate
+Sphingomyelin (C16)|N-palmitoylsphingomyelin
+Galactosylceramide|galactosylceramide
+Lactosylceramide|lactosylceramide
+Psychosine
+Ganglioside GM3|ganglioside GM3
+Ganglioside GM1|ganglioside GM1
+Cholesteryl oleate|cholesteryl oleate
+Cholesteryl linoleate
+Cholesteryl palmitate
+Wax ester (cetyl palmitate)|cetyl palmitate
+Squalene
+Lanosterol
+Lathosterol
+Desmosterol
+Zymosterol
+Prostaglandin E2|dinoprostone
+Prostaglandin E1|alprostadil
+Prostaglandin F2alpha|dinoprost
+Prostaglandin D2
+Prostaglandin H2
+Prostaglandin I2 (prostacyclin)|epoprostenol
+Thromboxane A2
+Thromboxane B2
+Leukotriene A4
+Leukotriene B4
+Leukotriene C4
+Leukotriene D4
+Leukotriene E4
+Lipoxin A4
+Resolvin E1
+Resolvin D1
+Protectin D1
+Maresin 1
+5-HETE|5-hydroxyeicosatetraenoic acid
+12-HETE|12-hydroxyeicosatetraenoic acid
+15-HETE|15-hydroxyeicosatetraenoic acid
+20-HETE|20-hydroxyeicosatetraenoic acid
+14,15-EET|14,15-epoxyeicosatrienoic acid
+9-HODE|9-hydroxyoctadecadienoic acid
+13-HODE|13-hydroxyoctadecadienoic acid
+Isoprostane (8-iso-PGF2alpha)|8-isoprostane
+Jasmonic acid
+Methyl jasmonate
+Traumatic acid
+
+# Sterols, steroids & hormones
+Cholesterol
+Cholestanol
+Coprostanol
+7-Ketocholesterol
+24-Hydroxycholesterol|24S-hydroxycholesterol
+25-Hydroxycholesterol
+27-Hydroxycholesterol
+Beta-sitosterol
+Stigmasterol
+Campesterol
+Brassicasterol
+Fucosterol
+Sitostanol
+Pregnenolone
+17-Hydroxypregnenolone|17alpha-hydroxypregnenolone
+Progesterone
+17-Hydroxyprogesterone|17alpha-hydroxyprogesterone
+11-Deoxycorticosterone|desoxycorticosterone
+Corticosterone
+Aldosterone
+11-Deoxycortisol|cortodoxone
+Cortisol|hydrocortisone
+Cortisone
+Prednisolone
+Prednisone
+Dexamethasone
+Dehydroepiandrosterone (DHEA)|prasterone
+DHEA sulfate|dehydroepiandrosterone sulfate
+Androstenedione
+Androstenediol
+Testosterone
+Dihydrotestosterone|androstanolone
+Androsterone
+Etiocholanolone
+Estrone
+Estradiol
+Estriol
+Estetrol
+2-Hydroxyestradiol
+Estrone sulfate
+Allopregnanolone|brexanolone
+Pregnanediol
+Ecdysone
+20-Hydroxyecdysone|ecdysterone
+Brassinolide
+Digoxin
+Digitoxin
+Ouabain
+Bufalin
+Diosgenin
+Tomatine
+Solanine
+Thyroxine (T4)|levothyroxine
+Triiodothyronine (T3)|liothyronine
+Reverse T3|reverse triiodothyronine
+Melatonin
+N-Acetylserotonin
+Epinephrine (adrenaline)|epinephrine
+Norepinephrine (noradrenaline)|norepinephrine
+Abscisic acid
+Gibberellic acid
+Indole-3-butyric acid
+Methyl salicylate
+Strigol
+Ethylene
+
+# Bile acids
+Cholic acid
+Chenodeoxycholic acid
+Deoxycholic acid
+Lithocholic acid
+Ursodeoxycholic acid
+Hyodeoxycholic acid
+Muricholic acid|beta-muricholic acid
+Alpha-muricholic acid
+Glycocholic acid
+Taurocholic acid
+Glycochenodeoxycholic acid
+Taurochenodeoxycholic acid
+Glycodeoxycholic acid
+Taurodeoxycholic acid
+Tauroursodeoxycholic acid
+Glycoursodeoxycholic acid
+Glycolithocholic acid
+Taurolithocholic acid
+Dehydrocholic acid
+7-Ketolithocholic acid
+3-Oxocholic acid|3-oxocholic acid
+Isolithocholic acid
+Obeticholic acid
+Bilirubin
+Biliverdin
+Urobilinogen
+Stercobilin
+Urobilin
+
+# Neurotransmitters & signaling molecules
+Acetylcholine
+Dopamine
+Serotonin
+Histamine
+Glutamate (L-glutamic acid)|L-glutamate
+Aspartate|L-aspartate
+Tyramine
+Octopamine
+Phenethylamine
+Tryptamine
+N,N-Dimethyltryptamine|dimethyltryptamine
+5-Methoxytryptamine
+Synephrine
+Normetanephrine
+Metanephrine
+3-Methoxytyramine
+3,4-Dihydroxyphenylacetic acid|3,4-dihydroxyphenylacetic acid
+3-Methoxy-4-hydroxyphenylglycol
+Adenosine (neuromodulator)|adenosine
+Nitric oxide
+Carbon monoxide
+Hydrogen sulfide
+Inositol trisphosphate (IP3)|D-myo-inositol 1,4,5-trisphosphate
+Diacylglycerol|diacylglycerol
+Arachidonoyl serotonin|N-arachidonoylserotonin
+Endomorphin-1
+Dynorphin A (1-8)|dynorphin A (1-8)
+Substance P
+Spermine
+Spermidine
+Putrescine
+Cadaverine
+Agmatine (neuromodulator)|agmatine
+Kynurenine (neuroactive)|kynurenine
+Quinolinic acid (NMDA agonist)|quinolinic acid
+N-Methyl-D-aspartic acid|N-methyl-D-aspartic acid
+Kainic acid
+Ibotenic acid
+Muscimol
+Domoic acid
+Quisqualic acid
+Glycine (inhibitory)|glycine
+Nicotine
+Cotinine
+Muscarine
+Choline chloride|choline chloride
+Phosphatidylcholine precursor citicoline|citicoline
+Salsolinol
+Tetrahydroisoquinoline|1,2,3,4-tetrahydroisoquinoline
+Isatin
+Harmine
+Harmaline
+Pinoline
+Tetrahydroharmine
+Ethanolamine
+Sarcosine (glycine transporter inhibitor)|sarcosine
+Cyclic adenosine diphosphate ribose|cyclic ADP-ribose
+Nicotinic acid adenine dinucleotide phosphate|NAADP
+Gamma-hydroxybutyric acid|4-hydroxybutanoic acid
+Allylglycine
+
+# Porphyrins & tetrapyrroles
+Porphobilinogen
+5-Aminolevulinic acid|aminolevulinic acid
+Hydroxymethylbilane
+Uroporphyrinogen III
+Coproporphyrinogen III
+Protoporphyrinogen IX
+Protoporphyrin IX
+Uroporphyrin I|uroporphyrin I
+Coproporphyrin III|coproporphyrin III
+Zinc protoporphyrin
+Chlorophyll a
+Chlorophyll b
+Bacteriochlorophyll a
+Pheophytin a
+Chlorophyllide a
+Phycocyanobilin
+Phytochromobilin
+Corrin|corrin
+Cobyrinic acid
+
+# Amines & polyamines
+Methylamine
+Dimethylamine
+Ethylamine
+Ammonia
+Hydroxylamine
+Hydrazine
+Diaminopropane|1,3-diaminopropane
+Norspermidine
+Thermospermine
+N1-Acetylspermidine
+N-Acetylputrescine
+Cadaverine (pentane-1,5-diamine)|1,5-diaminopentane
+Isoamylamine
+Isobutylamine
+Benzylamine
+Phenylethanolamine
+Hordenine
+Mescaline
+Tyrosol
+Hydroxytyrosol
+Methylhistamine|N-tele-methylhistamine
+Imidazole
+Imidazoleacetic acid|imidazole-4-acetic acid
+Pyrrole
+Indole
+Skatole
+Pyridine
+Piperidine
+Pyrrolidine
+Morpholine
+Guanidine
+Methylguanidine
+Aminoguanidine
+Choline (amine)|choline
+
+# Antioxidants, polyphenols & flavonoids
+Quercetin
+Kaempferol
+Myricetin
+Fisetin
+Rutin
+Quercitrin
+Isoquercitrin
+Hyperoside
+Luteolin
+Apigenin
+Chrysin
+Baicalein
+Baicalin
+Wogonin
+Tangeretin
+Nobiletin
+Diosmin
+Diosmetin
+Hesperetin
+Naringenin
+Naringin
+Eriodictyol
+Neohesperidin
+Taxifolin
+Catechin
+Epicatechin
+Epigallocatechin
+Epicatechin gallate
+Epigallocatechin gallate
+Gallocatechin
+Theaflavin
+Thearubigin|theaflavin-3-gallate
+Procyanidin B1
+Procyanidin B2
+Proanthocyanidin A2|procyanidin A2
+Cyanidin
+Delphinidin
+Malvidin
+Pelargonidin
+Peonidin
+Petunidin
+Cyanidin 3-glucoside|cyanidin-3-O-glucoside
+Genistein
+Daidzein
+Glycitein
+Equol
+Biochanin A
+Formononetin
+Puerarin
+Coumestrol
+Resveratrol
+Pterostilbene
+Piceatannol
+Polydatin|piceid
+Curcumin
+Demethoxycurcumin
+Bisdemethoxycurcumin
+Tetrahydrocurcumin
+Silibinin|silybin
+Honokiol
+Magnolol
+Gingerol|6-gingerol
+Shogaol|6-shogaol
+Zingerone
+Paradol|6-paradol
+Carnosic acid
+Carnosol
+Oleuropein
+Oleocanthal
+Tyrosol (olive phenol)|tyrosol
+Sesamin
+Sesamol
+Secoisolariciresinol
+Enterolactone
+Enterodiol
+Lignan matairesinol|matairesinol
+Urolithin A
+Urolithin B
+Punicalagin
+Tannic acid
+Mangiferin
+Phloretin
+Phlorizin
+Arbutin (hydroquinone glucoside)|alpha-arbutin
+Hydroquinone
+Catechol
+Pyrogallol
+Phloroglucinol
+Resorcinol
+Uric acid (antioxidant)|urate
+Glutathione (antioxidant)|L-glutathione
+Melatonin (antioxidant)|N-acetyl-5-methoxytryptamine
+Astaxanthin
+Ergothioneine (antioxidant)|L-ergothioneine
+Thymoquinone
+Carvacrol
+Thymol
+Eugenol
+Isoeugenol
+Vanillin
+Cinnamaldehyde
+Coumarin
+Umbelliferone
+Scopoletin
+Esculetin
+Psoralen
+Bergapten
+Xanthohumol
+Isoxanthohumol
+8-Prenylnaringenin
+Ursolic acid
+Oleanolic acid
+Betulinic acid
+Betulin
+Lupeol
+Boswellic acid|beta-boswellic acid
+Asiatic acid
+Glycyrrhetinic acid
+Ginsenoside Rb1
+Ginsenoside Rg1
+Ginsenoside Rg3
+Withaferin A
+Salidroside
+Rosavin
+Paeoniflorin
+Andrographolide
+Artemisinin
+Parthenolide
+Triptolide
+Celastrol
+Ellagic acid (antioxidant)|ellagic acid
+Caftaric acid
+Cichoric acid|chicoric acid
+Verbascoside|acteoside
+Echinacoside
+Salvianolic acid B
+Tanshinone IIA
+Emodin
+Aloe-emodin
+Rhein
+Hypericin
+Hyperforin
+Sulforaphane
+Indole-3-carbinol
+3,3'-Diindolylmethane
+Allicin
+Alliin
+Diallyl disulfide
+S-Allylcysteine
+Glucoraphanin
+Sinigrin
+Phenethyl isothiocyanate
+Allyl isothiocyanate
+Benzyl isothiocyanate
+
+# Carotenoids
+Alpha-carotene
+Gamma-carotene
+Lycopene
+Lutein
+Zeaxanthin
+Meso-zeaxanthin
+Beta-cryptoxanthin
+Canthaxanthin
+Fucoxanthin
+Capsanthin
+Capsorubin
+Violaxanthin
+Neoxanthin
+Antheraxanthin
+Bixin
+Norbixin
+Crocetin
+Crocin
+Phytoene
+Phytofluene
+Torulene
+Echinenone
+Rhodoxanthin
+Diadinoxanthin
+Peridinin
+
+# Alkaloids & dietary compounds
+Capsaicin
+Dihydrocapsaicin
+Piperine
+Theacrine
+Methylliberine
+Trigonelline
+Huperzine A
+Galantamine
+Vinpocetine
+Berberine
+Palmatine
+Sanguinarine
+Chelerythrine
+Evodiamine
+Rutaecarpine
+Yohimbine
+Reserpine
+Quinine
+Quinidine
+Strychnine
+Brucine
+Atropine
+Scopolamine
+Hyoscyamine
+Cocaine
+Ephedrine
+Pseudoephedrine
+Cathinone
+Morphine
+Codeine
+Thebaine
+Papaverine
+Noscapine
+Colchicine
+Vinblastine
+Vincristine
+Camptothecin
+Ergotamine
+Lysergic acid
+Psilocybin
+Psilocin
+Bufotenin
+Arecoline
+Lobeline
+Cytisine
+Anabasine
+Sparteine
+Coniine
+Solasodine
+Tomatidine
+Capsiate
+Hordenine (barley alkaloid)|hordenine
+Theophylline (tea alkaloid)|theophylline
+Taurine (dietary)|taurine
+Menthol
+Camphor
+Limonene
+Alpha-pinene
+Beta-pinene
+Myrcene
+Linalool
+Geraniol
+Citral
+Citronellal
+Nerol
+Farnesol
+Bisabolol|alpha-bisabolol
+Beta-caryophyllene|caryophyllene
+Humulene
+Eucalyptol
+Terpineol|alpha-terpineol
+Borneol
+Carvone
+Pulegone
+Thujone
+Nootkatone
+Valencene
+Safranal
+Anethole
+Estragole
+Myristicin
+Apiol
+Safrole
+Cannabidiol
+Tetrahydrocannabinol|dronabinol
+Cannabinol
+Cannabigerol
+Cannabichromene
+Tetrahydrocannabivarin
+Ethanol
+Methanol
+Isopropanol
+Acetaldehyde
+Formaldehyde
+Ethyl acetate
+Diacetyl
+Acetoin
+2,3-Butanediol
+Furfural
+Hydroxymethylfurfural
+Maltol
+Ethyl maltol
+Sotolon
+Acrylamide
+Monosodium glutamate
+Inosine monophosphate disodium|disodium inosinate
+Guanosine monophosphate disodium|disodium guanylate
+Saccharin
+Cyclamic acid
+Acesulfame
+Sodium benzoate
+Potassium sorbate
+Sorbic acid
+Propyl gallate
+Butylated hydroxytoluene (BHT)|2,6-di-tert-butyl-4-methylphenol
+Butylated hydroxyanisole (BHA)|3-tert-butyl-4-hydroxyanisole
+Tert-butylhydroquinone
+Ethoxyquin
+Tartrazine
+Sunset yellow FCF|sunset yellow
+Allura red AC|allura red
+Brilliant blue FCF|brilliant blue FCF
+Indigo carmine
+Erythrosine
+Carminic acid
+Betanin
+
+# Small inorganic & gaseous biomolecules
+Water
+Oxygen
+Ozone
+Carbon dioxide
+Nitrogen
+Nitrous oxide
+Nitrogen dioxide
+Hydrogen
+Hydrogen peroxide
+Superoxide
+Hydroxyl radical
+Hydrogen cyanide
+Sulfur dioxide
+Sulfuric acid
+Phosphoric acid
+Carbonic acid
+Nitric acid
+Nitrous acid
+Hydrochloric acid|hydrogen chloride
+Hypochlorous acid
+Hydrogen fluoride
+Ammonium ion|ammonium
+Hydronium ion|hydronium
+Hydroxide ion|hydroxide
+Peroxynitrite
+Methane
+Ethane
+Propane
+Butane
+Carbonyl sulfide
+Carbon disulfide
+Dimethyl sulfide
+Dimethyl sulfoxide
+Methanethiol
+Thiosulfate
+Sulfite
+Sulfide|sulfide
+Persulfide (hydrogen persulfide)|hydrogen disulfide
+Chlorate|chlorate
+Perchlorate
+Bromate
+Arsenate|arsenic acid
+Arsenite|arsenous acid
+Selenide|hydrogen selenide
+Tellurite|tellurous acid
+Silane
+Phosphine
+Borane|boric acid
+Cyanide ion|cyanide
+Azide|sodium azide
+Hydroxylammonium|hydroxylammonium chloride
+
+# Antibiotics, antimicrobials & microbial metabolites
+Penicillin G|benzylpenicillin
+Penicillin V|phenoxymethylpenicillin
+Amoxicillin
+Ampicillin
+Cephalexin
+Ceftriaxone
+Vancomycin
+Erythromycin
+Azithromycin
+Clarithromycin
+Tetracycline
+Doxycycline
+Minocycline
+Chloramphenicol
+Streptomycin
+Gentamicin|gentamicin C1
+Kanamycin
+Neomycin
+Rifampicin
+Isoniazid
+Ethambutol
+Pyrazinamide
+Ciprofloxacin
+Levofloxacin
+Metronidazole
+Trimethoprim
+Sulfamethoxazole
+Sulfanilamide
+Nitrofurantoin
+Linezolid
+Clindamycin
+Daptomycin
+Colistin|colistin A
+Bacitracin|bacitracin A
+Fosfomycin
+Mupirocin
+Fusidic acid
+Gramicidin S
+Valinomycin
+Nigericin
+Monensin
+Ionomycin
+Cycloserine
+Amphotericin B
+Nystatin
+Fluconazole
+Griseofulvin
+Terbinafine
+Lovastatin
+Mevastatin
+Cyclosporin A|ciclosporin
+Rapamycin|sirolimus
+Tacrolimus
+Mycophenolic acid
+Aflatoxin B1
+Ochratoxin A
+Patulin
+Zearalenone
+Deoxynivalenol
+Fumonisin B1
+Citrinin
+Gliotoxin
+Tetrodotoxin
+Saxitoxin
+Microcystin-LR
+Butyrate (microbial)|butyrate
+Propionate|propionate
+Succinate|succinate
+Trimethylamine (gut metabolite)|trimethylamine
+p-Cresol
+p-Cresyl sulfate
+Indole-3-aldehyde|indole-3-carboxaldehyde
+Phenylacetaldehyde
+Pyocyanin
+Siderophore enterobactin|enterobactin
+Desferrioxamine B|deferoxamine
+Pyoverdine chromophore|pyoverdine
+Staphyloxanthin
+Prodigiosin
+Violacein
+Autoinducer-2|autoinducer-2
+N-(3-oxododecanoyl)-homoserine lactone|N-3-oxo-dodecanoyl-L-homoserine lactone
+Ectoine
+Hydroxyectoine
+Trehalose (osmolyte)|alpha,alpha-trehalose
+Glycine betaine (osmolyte)|glycine betaine
+Dimethylsulfoniopropionate
+Proline betaine|stachydrine
+Diglycerol phosphate|diglycerol phosphate
+
+# Common medicines & drug metabolites
+Aspirin
+Paracetamol (acetaminophen)|acetaminophen
+Ibuprofen
+Naproxen
+Diclofenac
+Celecoxib
+Indomethacin
+Ketoprofen
+Meloxicam
+Metformin
+Glibenclamide|glyburide
+Sitagliptin
+Pioglitazone
+Dapagliflozin
+Empagliflozin
+Atorvastatin
+Simvastatin
+Rosuvastatin
+Ezetimibe
+Lisinopril
+Enalapril
+Captopril
+Losartan
+Valsartan
+Amlodipine
+Nifedipine
+Verapamil
+Diltiazem
+Metoprolol
+Propranolol
+Atenolol
+Carvedilol
+Furosemide
+Hydrochlorothiazide
+Spironolactone
+Warfarin
+Fondaparinux
+Clopidogrel
+Apixaban
+Rivaroxaban
+Dabigatran
+Nitroglycerin
+Isosorbide mononitrate
+Sildenafil
+Tadalafil
+Omeprazole
+Esomeprazole
+Pantoprazole
+Ranitidine
+Famotidine
+Loperamide
+Ondansetron
+Metoclopramide
+Domperidone
+Cetirizine
+Loratadine
+Fexofenadine
+Diphenhydramine
+Chlorpheniramine
+Salbutamol
+Montelukast
+Budesonide
+Fluticasone propionate
+Levothyroxine sodium|levothyroxine sodium
+Methimazole
+Propylthiouracil
+Sertraline
+Fluoxetine
+Paroxetine
+Citalopram
+Escitalopram
+Venlafaxine
+Duloxetine
+Bupropion
+Mirtazapine
+Amitriptyline
+Imipramine
+Lithium (as lithium citrate)|lithium citrate
+Diazepam
+Lorazepam
+Alprazolam
+Clonazepam
+Zolpidem
+Haloperidol
+Chlorpromazine
+Risperidone
+Olanzapine
+Quetiapine
+Aripiprazole
+Clozapine
+Methylphenidate
+Amphetamine
+Modafinil
+Levetiracetam
+Valproate sodium|sodium valproate
+Carbamazepine
+Lamotrigine
+Phenytoin
+Gabapentin
+Pregabalin
+Topiramate
+Donepezil
+Memantine
+Rivastigmine
+Sumatriptan
+Tramadol
+Oxycodone
+Fentanyl
+Naloxone
+Naltrexone
+Buprenorphine
+Methadone
+Ketamine
+Lidocaine
+Procaine
+Bupivacaine
+Propofol
+Sevoflurane
+Isoflurane
+Tamoxifen
+Letrozole
+Anastrozole
+Methotrexate
+Cyclophosphamide
+Cisplatin
+Doxorubicin
+Paclitaxel
+Imatinib
+Hydroxychloroquine
+Chloroquine
+Artesunate
+Ivermectin|ivermectin B1a
+Albendazole
+Praziquantel
+Oseltamivir
+Remdesivir
+Tenofovir
+Lamivudine
+Efavirenz
+Dolutegravir
+Sofosbuvir
+Finasteride
+Minoxidil
+Isotretinoin
+Allopurinol (gout)|allopurinol
+Colchicine (gout)|colchicine
+Probenecid
+Desmopressin
+Misoprostol
+Mifepristone
+Levonorgestrel
+Ethinylestradiol
+Medroxyprogesterone acetate
+Norethisterone
+Drospirenone
+Clomifene
+Oxybutynin
+Tamsulosin
+Prazosin
+Clonidine
+Guanfacine
+Dexmedetomidine
+Atomoxetine
+Varenicline
+Disulfiram
+Acamprosate
+Deferasirox
+Penicillamine
+Dimercaprol
+Edetic acid (EDTA)|edetic acid
+NAPQI (paracetamol metabolite)|N-acetyl-p-benzoquinone imine
+Acetaminophen glucuronide|acetaminophen glucuronide
+Salicyluric acid
+Desmethylcitalopram|desmethylcitalopram
+Norfluoxetine
+Morphine-6-glucuronide
+Itraconazole

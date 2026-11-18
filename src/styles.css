@@ -137,6 +137,77 @@ button:hover { border-color: var(--accent); }
 
 /* ---------- workspace ---------- */
 .workspace { position: relative; flex: 1; display: flex; min-height: 0; }
+
+/* ---------- molecule library (TSK-UI-005) ---------- */
+.library {
+  width: 280px;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+}
+.library.collapsed { width: auto; }
+.library.collapsed .lib-body { display: none; }
+.library.collapsed .lib-caret { display: inline-block; transform: rotate(-90deg); }
+.lib-head { padding: 8px 10px 4px; }
+.lib-collapse {
+  width: 100%;
+  text-align: left;
+  font-size: 12px;
+  font-weight: 650;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  background: none;
+  border: none;
+  padding: 4px 2px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.library.collapsed .lib-collapse { writing-mode: vertical-rl; transform: rotate(180deg); padding: 8px 2px; }
+.lib-count { font-weight: 400; }
+.lib-body { display: flex; flex-direction: column; gap: 6px; padding: 0 10px 8px; min-height: 0; flex: 1; }
+.lib-search, .lib-category {
+  width: 100%;
+  box-sizing: border-box;
+  font: inherit;
+  font-size: 13px;
+  padding: 6px 8px;
+  color: var(--text);
+  background: var(--sandbox);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+.lib-search:focus, .lib-category:focus { outline: 2px solid var(--accent, #4a90d9); outline-offset: -1px; }
+.lib-status { font-size: 11px; color: var(--muted); }
+.lib-list { list-style: none; margin: 0; padding: 0; overflow-y: auto; flex: 1; min-height: 0; }
+.lib-item {
+  padding: 6px 6px;
+  border-radius: 6px;
+  cursor: grab;
+  user-select: none;
+  touch-action: none;
+}
+.lib-item:hover { background: var(--hover, rgba(127, 127, 127, 0.14)); }
+.lib-name { font-size: 13px; font-weight: 550; line-height: 1.25; }
+.lib-meta { display: flex; justify-content: space-between; gap: 6px; font-size: 11px; color: var(--muted); }
+.lib-formula { font-variant-numeric: tabular-nums; }
+.lib-cat { text-align: right; opacity: 0.85; }
+.molecule-ghost {
+  width: auto !important;
+  height: auto !important;
+  padding: 4px 10px;
+  border-radius: 999px !important;
+  margin: -12px 0 0 14px !important;
+  font-size: 13px;
+  white-space: nowrap;
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+.atom .charge-badge { fill: var(--surface); stroke: var(--muted); stroke-width: 1; }
+.atom .charge-text { font-size: 10px; font-weight: 700; fill: var(--text); }
 .sandbox { flex: 1; height: 100%; background: var(--sandbox); display: block; touch-action: none; }
 .panel {
   width: 260px;

@@ -1,4 +1,4 @@
-/** ATOMICA 2D molecule sandbox entry point — Tasks TSK-UI-001, TSK-UI-004. */
+/** ATOMICA 2D molecule sandbox entry point — Tasks TSK-UI-001, TSK-UI-004, TSK-UI-005. */
 
 import './styles.css';
 import { MoleculeModel, type BuildMode } from './sandbox/MoleculeModel';
@@ -6,6 +6,7 @@ import { renderPeriodicTable, describeElement } from './ui/PeriodicTable';
 import { SandboxView } from './ui/SandboxView';
 import { initThemeToggle } from './ui/theme';
 import { getElement } from './chemistry/elements';
+import { initLibraryPanel } from './ui/LibraryPanel';
 
 const $ = <T extends Element>(sel: string) => document.querySelector(sel) as T;
 
@@ -44,6 +45,10 @@ renderPeriodicTable($<HTMLElement>('#periodic-table'), {
   onHover: (e) => {
     info.textContent = e ? describeElement(e) : defaultInfo;
   },
+});
+
+initLibraryPanel($<HTMLElement>('#library'), {
+  onPlace: (m, x, y) => view.placeMolecule(m, x, y),
 });
 
 initThemeToggle($<HTMLButtonElement>('#theme-btn'));
@@ -85,13 +90,13 @@ function renderFragments(): void {
     ...frags.map((f) => {
       const li = document.createElement('li');
       const ids = new Set(f.atomIds);
-      const charge = f.match?.charge ?? 0;
+      const charge = f.match ? f.match.charge : f.atomIds.length === 1 ? f.impliedCharge : 0; // lone library ions keep their charge
       const name =
-        f.atomIds.length === 1 ? getElement(model.getAtom(f.atomIds[0]).symbol).name : f.match?.name ?? 'Unnamed structure';
+        f.match?.name ?? (f.atomIds.length === 1 ? getElement(model.getAtom(f.atomIds[0]).symbol).name : 'Unnamed structure');
 
       const nameEl = document.createElement('div');
       nameEl.className = 'name';
-      nameEl.textContent = name + (charge ? ' ion' : '');
+      nameEl.textContent = name + (charge && !/(\bion|\))$/i.test(name) ? ' ion' : '');
       const formulaEl = document.createElement('div');
       formulaEl.className = 'formula';
       formulaEl.innerHTML = f.formula.replace(/(\d+)/g, '<sub>$1</sub>') + chargeText(charge);
@@ -103,8 +108,14 @@ function renderFragments(): void {
       meta.className = 'meta';
       meta.textContent =
         `${f.molecularWeight.toFixed(3)} g/mol · ${f.atomIds.length} atom${f.atomIds.length > 1 ? 's' : ''}` +
-        (charge ? ' · charge from unfilled valences' : open ? ` · ${open} with open valence` : ' · valences satisfied');
+        (open ? ` · ${open} with open valence` : charge ? ' · charged' : ' · valences satisfied');
       li.append(meta);
+      if (f.partOf) {
+        const part = document.createElement('div');
+        part.className = 'meta';
+        part.textContent = `Ion/part of ${f.partOf} (PubChem draws it as separate pieces)`;
+        li.append(part);
+      }
       if (wrong) {
         const w = document.createElement('div');
         w.className = 'meta red-text';

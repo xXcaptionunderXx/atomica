@@ -912,10 +912,27 @@ function buildLibrary(): CompoundEntry[] {
 export const COMPOUND_LIBRARY: readonly CompoundEntry[] = buildLibrary();
 
 const INDEX = new Map<string, CompoundEntry[]>();
-for (const e of COMPOUND_LIBRARY) {
-  const key = `${e.formula}|${e.charge}`;
-  if (!INDEX.has(key)) INDEX.set(key, []);
-  INDEX.get(key)!.push(e);
+/** Same entries keyed by formula alone: last-resort match when the charge reading disagrees. */
+const BY_FORMULA = new Map<string, CompoundEntry[]>();
+const indexed = new Set<string>();
+
+function addToIndex(e: CompoundEntry): void {
+  const id = `${e.formula}|${e.charge}|${e.name.toLowerCase()}`;
+  if (indexed.has(id)) return;
+  indexed.add(id);
+  for (const [map, key] of [[INDEX, `${e.formula}|${e.charge}`], [BY_FORMULA, e.formula]] as const) {
+    if (!map.has(key)) map.set(key, []);
+    map.get(key)!.push(e);
+  }
+}
+for (const e of COMPOUND_LIBRARY) addToIndex(e);
+
+/**
+ * Add names (e.g. the biomolecule library, TSK-UI-005) after the curated list, so curated names
+ * stay first and new ones appear as isomers / extra matches. Formulas must be Hill notation.
+ */
+export function registerCompounds(entries: Iterable<CompoundEntry>): void {
+  for (const e of entries) addToIndex(e);
 }
 
 /**
@@ -923,7 +940,7 @@ for (const e of COMPOUND_LIBRARY) {
  * neutral compound (the sandbox does not track charge, so an unfilled valence is ambiguous).
  */
 export function lookupCompound(hillFormula: string, impliedCharge = 0): CompoundMatch | null {
-  const hits = INDEX.get(`${hillFormula}|${impliedCharge}`) ?? INDEX.get(`${hillFormula}|0`);
+  const hits = INDEX.get(`${hillFormula}|${impliedCharge}`) ?? INDEX.get(`${hillFormula}|0`) ?? BY_FORMULA.get(hillFormula);
   if (!hits || hits.length === 0) return null;
   return { name: hits[0].name, charge: hits[0].charge, isomers: hits.slice(1).map((h) => h.name) };
 }

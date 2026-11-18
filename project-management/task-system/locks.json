@@ -1,73 +1,6 @@
 {
   "version": "1.0.0",
-  "locks": {
-    "src/chemistry/biomolecules": {
-      "agent": "claude",
-      "taskId": "TSK-UI-005",
-      "acquiredAt": "2026-11-18T21:44:55.729694+00:00",
-      "expiresAt": "2026-11-19T09:44:55.729705+00:00"
-    },
-    "scripts/build-biomolecule-library.mjs": {
-      "agent": "claude",
-      "taskId": "TSK-UI-005",
-      "acquiredAt": "2026-11-18T21:44:55.729694+00:00",
-      "expiresAt": "2026-11-19T09:44:55.729705+00:00"
-    },
-    "src/ui/LibraryPanel.ts": {
-      "agent": "claude",
-      "taskId": "TSK-UI-005",
-      "acquiredAt": "2026-11-18T21:44:55.729694+00:00",
-      "expiresAt": "2026-11-19T09:44:55.729705+00:00"
-    },
-    "src/sandbox/MoleculeModel.ts": {
-      "agent": "claude",
-      "taskId": "TSK-UI-005",
-      "acquiredAt": "2026-11-18T21:44:55.729694+00:00",
-      "expiresAt": "2026-11-19T09:44:55.729705+00:00"
-    },
-    "src/ui/SandboxView.ts": {
-      "agent": "claude",
-      "taskId": "TSK-UI-005",
-      "acquiredAt": "2026-11-18T21:44:55.729694+00:00",
-      "expiresAt": "2026-11-19T09:44:55.729705+00:00"
-    },
-    "src/main.ts": {
-      "agent": "claude",
-      "taskId": "TSK-UI-005",
-      "acquiredAt": "2026-11-18T21:44:55.729694+00:00",
-      "expiresAt": "2026-11-19T09:44:55.729705+00:00"
-    },
-    "index.html": {
-      "agent": "claude",
-      "taskId": "TSK-UI-005",
-      "acquiredAt": "2026-11-18T21:44:55.729694+00:00",
-      "expiresAt": "2026-11-19T09:44:55.729705+00:00"
-    },
-    "src/styles.css": {
-      "agent": "claude",
-      "taskId": "TSK-UI-005",
-      "acquiredAt": "2026-11-18T21:44:55.729694+00:00",
-      "expiresAt": "2026-11-19T09:44:55.729705+00:00"
-    },
-    "src/chemistry/compoundNames.ts": {
-      "agent": "claude",
-      "taskId": "TSK-UI-005",
-      "acquiredAt": "2026-11-18T21:44:55.729694+00:00",
-      "expiresAt": "2026-11-19T09:44:55.729705+00:00"
-    },
-    "tests/chemistry/biomolecules.test.ts": {
-      "agent": "claude",
-      "taskId": "TSK-UI-005",
-      "acquiredAt": "2026-11-18T21:44:55.729694+00:00",
-      "expiresAt": "2026-11-19T09:44:55.729705+00:00"
-    },
-    "tests/sandbox": {
-      "agent": "claude",
-      "taskId": "TSK-UI-005",
-      "acquiredAt": "2026-11-18T21:44:55.729694+00:00",
-      "expiresAt": "2026-11-19T09:44:55.729705+00:00"
-    }
-  },
+  "locks": {},
   "tasks": {
     "TSK-ENG-001": {
       "agent": "gemini",
@@ -144,7 +77,7 @@
     },
     "TSK-UI-005": {
       "agent": "claude",
-      "status": "IN_PROGRESS",
+      "status": "REVIEW",
       "files": [
         "src/chemistry/biomolecules",
         "scripts/build-biomolecule-library.mjs",
@@ -158,7 +91,8 @@
         "tests/chemistry/biomolecules.test.ts",
         "tests/sandbox"
       ],
-      "claimedAt": "2026-11-18T21:44:55.729694+00:00"
+      "claimedAt": "2026-11-18T21:44:55.729694+00:00",
+      "releasedAt": "2026-11-18T22:05:12.649925+00:00"
     }
   }
 }

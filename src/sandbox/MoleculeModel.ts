@@ -10,6 +10,8 @@
  *    from the best valence-satisfying assignment (shown red in the UI).
  *
  * Bonding rule is the labelled valence APPROXIMATION documented in chemistry/elements.ts.
+ * Atoms placed from the biomolecule library (TSK-UI-005) carry their PubChem formal charge, which
+ * shifts the allowed valences (O- -> 1, N+ -> 4, ...) so real ions and zwitterions read as complete.
  */
 
 import { getElement, maxValence } from '../chemistry/elements';
@@ -21,6 +23,26 @@ export interface SandboxAtom {
   symbol: string;
   x: number;
   y: number;
+  /** Formal charge (library molecules only; hand-built atoms are neutral). */
+  charge?: number;
+  /** Library placement this atom came from (see MoleculeModel.addMolecule). */
+  origin?: number;
+}
+
+/** A complete structure to place in one step (coordinates in sandbox pixels). */
+export interface MoleculeTemplate {
+  name: string;
+  symbols: string[];
+  positions: { x: number; y: number }[];
+  /** [atomIndexA, atomIndexB, order] */
+  bonds: [number, number, number][];
+  charges?: number[];
+}
+
+interface Origin {
+  name: string;
+  size: number;
+  formula: string;
 }
 
 export interface SandboxBond {
@@ -40,6 +62,8 @@ export interface Fragment {
   /** Charge implied by unfilled valences on electronegative atoms (e.g. sulfate −2). */
   impliedCharge: number;
   match: CompoundMatch | null;
+  /** Library compound this fragment is one ion/piece of (e.g. "Calcium carbonate"). */
+  partOf?: string;
 }
 
 export interface BondResult {
@@ -63,6 +87,8 @@ export class MoleculeModel {
   /** Incremented on every structural change (atoms/bonds/orders), not on moves. */
   private _version = 0;
   private issuesCache: { version: number; ids: Set<number> } | null = null;
+  private origins = new Map<number, Origin>();
+  private nextOrigin = 1;
 
   // ---------- queries ----------
   get mode(): BuildMode {
@@ -109,12 +135,34 @@ export class MoleculeModel {
     return this.bondsOf(atomId).reduce((s, b) => s + b.order, 0);
   }
 
+  /**
+   * Allowed valences, shifted by formal charge: an isoelectronic shift (N+ ~ C -> 4, O- -> 1) or
+   * loss of a bonding pair (C-/C+ -> 3). A charged atom may also stand alone as a simple ion (0 bonds).
+   */
+  valencesOf(atomId: number): number[] {
+    const atom = this.getAtom(atomId);
+    const base = getElement(atom.symbol).valences;
+    const q = atom.charge ?? 0;
+    if (!q) return base;
+    const out = new Set<number>([0]);
+    for (const v of base) {
+      if (v + q >= 0) out.add(v + q);
+      if (v - Math.abs(q) >= 0) out.add(v - Math.abs(q));
+    }
+    return [...out].sort((a, b) => a - b);
+  }
+
+  private maxValenceOf(atomId: number): number {
+    const a = this.getAtom(atomId);
+    return a.charge ? Math.max(0, ...this.valencesOf(atomId)) : maxValence(a.symbol);
+  }
+
   freeValence(atomId: number): number {
-    return maxValence(this.getAtom(atomId).symbol) - this.usedValence(atomId);
+    return this.maxValenceOf(atomId) - this.usedValence(atomId);
   }
 
   valenceStatus(atomId: number): ValenceStatus {
-    const valences = getElement(this.getAtom(atomId).symbol).valences;
+    const valences = this.valencesOf(atomId);
     if (valences.length === 0) return 'inert';
     return valences.includes(this.usedValence(atomId)) ? 'complete' : 'open';
   }
@@ -122,7 +170,7 @@ export class MoleculeModel {
   /** Units of valence still open before the atom reaches its next allowed valence. */
   openValence(atomId: number): number {
     const used = this.usedValence(atomId);
-    const next = getElement(this.getAtom(atomId).symbol).valences.filter((v) => v >= used);
+    const next = this.valencesOf(atomId).filter((v) => v >= used);
     return next.length ? Math.min(...next) - used : 0;
   }
 
@@ -140,6 +188,26 @@ export class MoleculeModel {
     this.atoms.set(atom.id, atom);
     this.changed();
     return atom;
+  }
+
+  /** Place a whole structure (e.g. from the biomolecule library) as one change. Returns atom ids. */
+  addMolecule(t: MoleculeTemplate): number[] {
+    t.symbols.forEach((s) => getElement(s)); // validate before mutating anything
+    const origin = this.nextOrigin++;
+    this.origins.set(origin, { name: t.name, size: t.symbols.length, formula: hillFormula(t.symbols) });
+    const ids = t.symbols.map((symbol, i) => {
+      const atom: SandboxAtom = { id: this.nextAtomId++, symbol, x: t.positions[i].x, y: t.positions[i].y, origin };
+      if (t.charges?.[i]) atom.charge = t.charges[i];
+      this.atoms.set(atom.id, atom);
+      return atom.id;
+    });
+    for (const [i, j, order] of t.bonds) {
+      const o = Math.min(3, Math.max(1, order)) as 1 | 2 | 3;
+      const bond: SandboxBond = { id: this.nextBondId++, a: ids[i], b: ids[j], order: o };
+      this.bonds.set(bond.id, bond);
+    }
+    this.changed();
+    return ids;
   }
 
   moveAtom(id: number, x: number, y: number): void {
@@ -172,10 +240,10 @@ export class MoleculeModel {
     }
     if (existing && existing.order >= MAX_BOND_ORDER) return 'Bond is already triple (maximum order)';
     for (const atom of [atomA, atomB]) {
-      if (maxValence(atom.symbol) === 0) return `${getElement(atom.symbol).name} has no established bonding chemistry`;
+      if (this.maxValenceOf(atom.id) === 0) return `${getElement(atom.symbol).name} has no established bonding chemistry`;
       // Easy mode only needs room for one more single bond; orders are re-solved afterwards.
       const used = this._mode === 'easy' ? this.bondsOf(atom.id).length : this.usedValence(atom.id);
-      if (maxValence(atom.symbol) - used < 1) return `${atom.symbol} has no free valence left`;
+      if (this.maxValenceOf(atom.id) - used < 1) return `${atom.symbol} has no free valence left`;
     }
     return null;
   }
@@ -227,6 +295,7 @@ export class MoleculeModel {
   clear(): void {
     this.atoms.clear();
     this.bonds.clear();
+    this.origins.clear();
     this.changed();
   }
 
@@ -247,7 +316,7 @@ export class MoleculeModel {
   // ---------- bond-order solving ----------
   private solveFragment(atomIds: number[]) {
     const ids = new Set(atomIds);
-    const atoms = atomIds.map((id) => ({ id, valences: getElement(this.getAtom(id).symbol).valences }));
+    const atoms = atomIds.map((id) => ({ id, valences: this.valencesOf(id) }));
     const bonds = this.getBonds().filter((b) => ids.has(b.a));
     return { bonds, solution: solveBondOrders(atoms, bonds) };
   }
@@ -305,17 +374,46 @@ export class MoleculeModel {
 
   /** Connected components with formula, weight, implied ionic charge and library name. */
   fragments(): Fragment[] {
-    return this.components().map((ids) => {
-      const symbols = ids.map((i) => this.getAtom(i).symbol);
-      const impliedCharge = -ids
-        .filter((i) => ANION_FORMERS.has(this.getAtom(i).symbol) && this.bondsOf(i).length > 0)
-        .reduce((s, i) => s + this.openValence(i), 0);
+    const originCounts = new Map<number, number>();
+    const originParts = new Map<number, number>();
+    const comps = this.components();
+    for (const a of this.atoms.values()) if (a.origin) originCounts.set(a.origin, (originCounts.get(a.origin) ?? 0) + 1);
+    for (const ids of comps) {
+      const o = this.getAtom(ids[0]).origin;
+      if (o) originParts.set(o, (originParts.get(o) ?? 0) + 1);
+    }
+    return comps.map((ids) => {
+      const atoms = ids.map((i) => this.getAtom(i));
+      const symbols = atoms.map((a) => a.symbol);
+      const formula = hillFormula(symbols);
+      const formal = atoms.reduce((s, a) => s + (a.charge ?? 0), 0);
+      const impliedCharge =
+        formal -
+        atoms
+          .filter((a) => !a.charge && ANION_FORMERS.has(a.symbol) && this.bondsOf(a.id).length > 0)
+          .reduce((s, a) => s + this.openValence(a.id), 0);
+      // An untouched library placement keeps its exact name; edited ones fall back to formula lookup.
+      // Records PubChem draws as separate ions (salts, B12's Co/CN⁻) arrive as several fragments:
+      // known ions keep their own names, an otherwise-unnamed piece takes "<name> (part)".
+      const o = atoms[0].origin ?? -1;
+      const origin = this.origins.get(o);
+      const pure = !!origin && atoms.every((a) => a.origin === o) && originCounts.get(o) === origin.size;
+      const split = pure && (originParts.get(o) ?? 1) > 1;
+      const lookup = lookupCompound(formula, impliedCharge);
+      let match: CompoundMatch | null = ids.length > 1 ? lookup : null;
+      if (pure && origin && !split && origin.formula === formula) {
+        const others = lookup ? [lookup.name, ...lookup.isomers].filter((n) => n.toLowerCase() !== origin.name.toLowerCase()) : [];
+        match = { name: origin.name, charge: impliedCharge, isomers: others };
+      } else if (split && origin && !match && ids.length > 1) {
+        match = { name: `${origin.name} (part)`, charge: impliedCharge, isomers: [] };
+      }
       return {
         atomIds: ids,
-        formula: hillFormula(symbols),
+        formula,
         molecularWeight: molecularWeight(symbols),
         impliedCharge,
-        match: ids.length > 1 ? lookupCompound(hillFormula(symbols), impliedCharge) : null,
+        match,
+        ...(split && origin ? { partOf: origin.name } : {}),
       };
     });
   }

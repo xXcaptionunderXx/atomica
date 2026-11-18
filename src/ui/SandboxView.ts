@@ -8,9 +8,10 @@
  */
 
 import { getElement } from '../chemistry/elements';
-import { MoleculeModel, type SandboxAtom } from '../sandbox/MoleculeModel';
+import { MoleculeModel, type SandboxAtom, type SandboxBond } from '../sandbox/MoleculeModel';
 import { layoutFragment, type AtomGeometry, type BondStyle } from '../sandbox/Geometry';
 import { atomFill, textColorFor } from './colors';
+import { toTemplate, type Biomolecule } from '../chemistry/biomolecules/library';
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
 const ATOM_R = 18;
@@ -28,6 +29,7 @@ export class SandboxView {
   private layoutVersion = -1;
   private geometry = new Map<number, AtomGeometry>();
   private bondStyles = new Map<number, BondStyle>();
+  private layoutKeys = new Set<string>();
 
   constructor(
     private readonly svg: SVGSVGElement,
@@ -57,6 +59,7 @@ export class SandboxView {
   setGeometry(on: boolean): void {
     this.geometryOn = on;
     this.layoutVersion = -1;
+    this.layoutKeys.clear();
     if (on) this.relayout();
     this.render();
   }
@@ -69,13 +72,30 @@ export class SandboxView {
   /** Recompute VSEPR layout for every molecule; a single model update re-renders. */
   private relayout(): void {
     this.layoutVersion = this.model.version;
-    this.geometry.clear();
-    this.bondStyles.clear();
+    const prevGeometry = this.geometry;
+    const prevStyles = this.bondStyles;
+    const prevKeys = this.layoutKeys;
+    this.geometry = new Map();
+    this.bondStyles = new Map();
+    this.layoutKeys = new Set();
     const positions = new Map<number, { x: number; y: number }>();
+    const bondsByAtom = new Map<number, SandboxBond[]>();
+    for (const b of this.model.getBonds()) {
+      if (!bondsByAtom.has(b.a)) bondsByAtom.set(b.a, []);
+      bondsByAtom.get(b.a)!.push(b);
+    }
     for (const frag of this.model.fragments()) {
-      const ids = new Set(frag.atomIds);
+      const bonds = frag.atomIds.flatMap((id) => bondsByAtom.get(id) ?? []);
+      // Unchanged molecules (same atoms, bonds and orders) keep their layout: big fused-ring
+      // systems are expensive to relax, and re-laying them out would also undo the user's drags.
+      const key = `${frag.atomIds.join(',')}|${bonds.map((b) => `${b.id}:${b.order}`).join(',')}`;
+      this.layoutKeys.add(key);
+      if (prevKeys.has(key)) {
+        for (const id of frag.atomIds) if (prevGeometry.has(id)) this.geometry.set(id, prevGeometry.get(id)!);
+        for (const b of bonds) if (prevStyles.has(b.id)) this.bondStyles.set(b.id, prevStyles.get(b.id)!);
+        continue;
+      }
       const atoms = frag.atomIds.map((id) => this.model.getAtom(id));
-      const bonds = this.model.getBonds().filter((b) => ids.has(b.a));
       const res = layoutFragment(atoms, bonds);
       for (const [id, p] of res.positions) positions.set(id, p);
       for (const [id, g] of res.geometry) this.geometry.set(id, g);
@@ -116,6 +136,24 @@ export class SandboxView {
     const target = this.atomAt(p.x, p.y);
     if (target) this.attachTo(symbol, target.id, p);
     else this.model.addAtom(symbol, p.x, p.y);
+  }
+
+  /**
+   * Place a whole library molecule centred at a screen point (drag-drop), or near the sandbox
+   * centre (click). Large molecules are shrunk (bond length down to 36 px) to fit the view.
+   */
+  placeMolecule(m: Biomolecule, clientX?: number, clientY?: number): void {
+    let p = clientX !== undefined && clientY !== undefined ? this.toLocal(clientX, clientY) : null;
+    if (clientX !== undefined && !p) return; // dropped outside the sandbox
+    if (!p) {
+      const c = this.center();
+      const k = this.model.fragments().length % 6;
+      p = { x: c.x + (k % 3 - 1) * 60, y: c.y + (Math.floor(k / 3) - 0.5) * 60 };
+    }
+    const box = this.svg.getBoundingClientRect();
+    this.model.addMolecule(toTemplate(m, p.x, p.y, BOND_LENGTH, { width: box.width, height: box.height, minBondPx: 36 }));
+    this.selection = null;
+    if (m.atomCount > 150) this.notify(`${m.name}: ${m.atomCount} atoms placed`);
   }
 
   /** Click on a table tile: attach to the selected atom, otherwise place near the centre. */
@@ -314,6 +352,12 @@ export class SandboxView {
       if (this.selectedAtomId === atom.id) g.append(el('circle', { class: 'select-ring', r: r + 4 }));
       g.append(el('circle', { class: 'body', r, fill: atomFill(atom.symbol) }));
       g.append(el('text', { fill: textColorFor(atom.symbol), 'font-size': atom.symbol.length > 1 ? 13 : r < ATOM_R ? 12 : 15 }, atom.symbol));
+      if (atom.charge) {
+        const q = atom.charge;
+        const label = `${Math.abs(q) > 1 ? Math.abs(q) : ''}${q > 0 ? '+' : '−'}`;
+        g.append(el('circle', { class: 'charge-badge', cx: -r + 1, cy: -r + 1, r: 7.5 }));
+        g.append(el('text', { class: 'charge-text', x: -r + 1, y: -r + 1 }, label));
+      }
       const free = this.model.freeValence(atom.id);
       if (status === 'open' && free > 0) {
         g.append(el('circle', { class: 'badge', cx: r - 2, cy: -r + 2, r: 7 }));
