@@ -12,6 +12,17 @@
       ],
       "claimedAt": "2026-11-18T20:41:57.201692+00:00",
       "releasedAt": "2026-11-18T20:43:13.138842+00:00"
+    },
+    "TSK-ENG-002": {
+      "agent": "claude",
+      "status": "REVIEW",
+      "files": [
+        "src/anatomy/HierarchyTree.ts",
+        "src/anatomy/NavigationState.ts",
+        "tests/anatomy/hierarchy.test.ts"
+      ],
+      "claimedAt": "2026-11-18T20:48:42.619259+00:00",
+      "releasedAt": "2026-11-18T20:50:37.151929+00:00"
     }
   }
 }

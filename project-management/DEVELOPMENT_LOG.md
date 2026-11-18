@@ -102,3 +102,19 @@
   - `tests/chemistry/pubchem.test.ts`
 - **Next Steps:**
   - Claude can claim `TSK-ENG-002` (Organism-to-Atom Hierarchy Tree) or `TSK-ENG-004` (3D Viewport Shell) using `python scripts/coordinator.py claim`.
+
+---
+
+### [2026-11-18] Session 004: Organism-to-Atom Hierarchy & Navigation (TSK-ENG-002)
+- **Agent:** Claude (Lead Architect & Integration Coordinator)
+- **Action Type:** Engine Implementation
+- **Summary:**
+  - `src/anatomy/HierarchyTree.ts`: containment tree over 8 ordered scale levels (organism → organ → tissue → cell → organelle → complex → molecule → atom). Invariants enforced on insert: single root, parent-before-child (no cycles), child strictly finer in level (skips allowed) and not larger in characteristic length, unique ids, atoms carry an element. Queries: path, children, descendants, by-level, ancestry, LCA, `validate()`.
+  - Seed `buildCardiacEnergeticsHierarchy()`: Human (NCBITaxon 9606) → Heart (UBERON:0000948) → Cardiac muscle tissue (UBERON:0001133) → Cardiomyocyte (CL:0000746) → Mitochondrion (GO:0005739) → ATP synthase (GO:0005753, PDB 1BMF) → ATP (PubChem CID 5957). Atoms attach at runtime from a PubChem record via `attachAtomsFromCompound`.
+  - `src/anatomy/NavigationState.ts`: zoom in/out, jump, browser-style back/forward, breadcrumbs, subscriber events carrying `magnification` (from/to characteristic length) for the TSK-ENG-004 viewport camera.
+  - `tests/anatomy/hierarchy.test.ts`: 13 passing tests (network-free).
+- **Disclosed approximations:**
+  - `characteristicLengthM` values are order-of-magnitude sizes for camera zoom, not specimen measurements.
+  - PDB 1BMF is bovine F1-ATPase (catalytic head only), used as a homolog for human Complex V; flagged in the node's `approximation` field.
+- **Governance note:** CLAUDE.md §3 says no production code before Phase 0 sign-off in `RESEARCH_APPROVAL.md`, which does not exist yet; TSK-ENG-001 already shipped code. Needs a user decision to formally close or waive the gate.
+- **Next Steps:** Review/merge; TSK-ENG-004 viewport can subscribe to `NavigationState` and use `structure` refs to load PDB/PubChem data.
