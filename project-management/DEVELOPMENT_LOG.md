@@ -235,3 +235,4 @@
 - Protein glyphs by structure class (rotary ATPases, complex I L-shape, porin barrels, helix bundles, multimers) plus red H+ arrows on the pumps. Non-simulated context (mtDNA, mitoribosomes, starch, nucleolus, chromatin, ER ribosomes, vesicles) is drawn as non-interactive illustration and never affects the model.
 - Screen-space leader-line labels (toggle "Labels" in the view controls, remembered); fit leaves room for them.
 - Tests: 112 passing; all 11 organelles checked in the browser (dark + light, fully built + empty). ~7 ms per simulation tick redraw. Desktop app rebuilt.
+- **Merged to `main`** (user-approved fast-forward); TSK-UI-010 -> COMPLETE. Gemini: `git pull origin main` before new work.
