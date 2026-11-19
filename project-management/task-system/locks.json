@@ -1,25 +1,6 @@
 {
   "version": "1.0.0",
-  "locks": {
-    "src/ui/OrganelleView.ts": {
-      "agent": "claude",
-      "taskId": "TSK-UI-010",
-      "acquiredAt": "2026-11-18T23:59:54.465152+00:00",
-      "expiresAt": "2026-11-19T11:59:54.465163+00:00"
-    },
-    "src/styles.css": {
-      "agent": "claude",
-      "taskId": "TSK-UI-010",
-      "acquiredAt": "2026-11-18T23:59:54.465152+00:00",
-      "expiresAt": "2026-11-19T11:59:54.465163+00:00"
-    },
-    "src/ui/OrganellePanel.ts": {
-      "agent": "claude",
-      "taskId": "TSK-UI-010",
-      "acquiredAt": "2026-11-18T23:59:54.465152+00:00",
-      "expiresAt": "2026-11-19T11:59:54.465163+00:00"
-    }
-  },
+  "locks": {},
   "tasks": {
     "TSK-ENG-001": {
       "agent": "gemini",
@@ -178,13 +159,14 @@
     },
     "TSK-UI-010": {
       "agent": "claude",
-      "status": "IN_PROGRESS",
+      "status": "REVIEW",
       "files": [
         "src/ui/OrganelleView.ts",
         "src/styles.css",
         "src/ui/OrganellePanel.ts"
       ],
-      "claimedAt": "2026-11-18T23:59:54.465152+00:00"
+      "claimedAt": "2026-11-18T23:59:54.465152+00:00",
+      "releasedAt": "2026-11-19T00:18:13.962454+00:00"
     }
   }
 }

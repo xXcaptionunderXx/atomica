@@ -224,3 +224,14 @@
 - A "Fully built / Empty - build it" toggle in the organelle library (remembered) places the bare blueprint instead. Incomplete organelles show a "Complete it" button that fills only what is missing (keeps lipids you pasted). Everything is one undo step.
 - Tests: 112 passing (new: compositions sum to 1 and match the atom-graph classifier, every blueprint placed built is complete and every reaction turns over, empty/complete/undo). Checked in the browser with real drags. Desktop app rebuilt.
 - **Merged to `main`** (user-approved fast-forward); TSK-UI-009 -> COMPLETE. Gemini: `git pull origin main` before new work.
+
+
+---
+
+### [2026-11-18] Session 015: Organelle layer art rehaul (TSK-UI-010)
+- **Agent:** Claude. Branch `agent/claude/organelle-art`. Organelle view only; the atomic layer is untouched.
+- Rewrote `src/ui/OrganelleView.ts` as a textbook-style diagram: membranes drawn as real bilayers (two leaflets of head groups around a hydrophobic core; monolayer for lipid droplets), each clickable patch = one coarse-grained lipid unit coloured by lipid class (PC teal, PE blue, PS coral, CL amber, cholesterol yellow, SM green, MGDG/DGDG greens). Shaded compartments per organelle (matrix vs IMS, stroma vs thylakoid lumen, nucleoplasm vs perinuclear space...).
+- Correct topology: lamellar cristae with ATP synthase dimers at the ridges and I/III/IV on the crista walls, cyt c in the crista lumen; grana stacks with stroma lamellae and PSII/LHCII in grana vs PSI/ATP synthase on stroma-exposed faces; NPCs spanning both nuclear membranes; ribosome-studded ER sheets with a Sec61-docked ribosome; Golgi cisternae with dilated rims and vesicles; glycosylated LAMP1; carboxysome hexamer shell with vertex pentamers; ribosome with E/P/A tRNAs, mRNA codons and exit tunnel.
+- Protein glyphs by structure class (rotary ATPases, complex I L-shape, porin barrels, helix bundles, multimers) plus red H+ arrows on the pumps. Non-simulated context (mtDNA, mitoribosomes, starch, nucleolus, chromatin, ER ribosomes, vesicles) is drawn as non-interactive illustration and never affects the model.
+- Screen-space leader-line labels (toggle "Labels" in the view controls, remembered); fit leaves room for them.
+- Tests: 112 passing; all 11 organelles checked in the browser (dark + light, fully built + empty). ~7 ms per simulation tick redraw. Desktop app rebuilt.
